@@ -3,8 +3,6 @@ import os
 import random
 
 
-
-
 def inverse_shift_rows(matriz):
     """
     Realiza a rotação inversa das linhas da matriz (ShiftRows inverso).
@@ -54,8 +52,6 @@ def decrypt(bloco, chaves_rodada, tabelas_inversas, num_rodadas=10):
     bloco = add_round_key(bloco, chaves_rodada[0])
     return bloco
 
-
-
 def substitute_bytes(matriz, tabela_substituicao):
     """
     Aplica substituições de bytes em uma matriz 4x4 usando a tabela de substituição.
@@ -72,7 +68,6 @@ def substitute_bytes(matriz, tabela_substituicao):
         for j in range(4):
             matriz_substituida[i][j] = tabela_substituicao[matriz[i][j]]
     return matriz_substituida
-
 
 def add_round_key(matriz_bloco, chave_rodada):
     # Converte a chave de rodada em uma matriz 4x4
@@ -93,7 +88,6 @@ def compor_tabela(tabela1, tabela2):
     Compoe duas tabelas de substituição.
     """
     return {k: tabela2[v] for k, v in tabela1.items()}
-
 
 def gerar_tabelas_compostas(tabela_substituicao, num_rodadas):
     """
@@ -117,9 +111,7 @@ def gerar_chave_inicial():
     chave_hex = chave_inicial.hex()
     return chave_hex
 
-
 def galois_multiply(a, b):
-
     p = 0
     while b > 0:
         if b & 1:
@@ -132,7 +124,6 @@ def galois_multiply(a, b):
 
 # Multiplicadores para MixColumns
 multiplicadores = [0x02, 0x03, 0x01, 0x01]
-
 # Aplica MixColumns a uma coluna
 def mix_column(coluna):
     resultado = np.zeros(4, dtype=np.uint8)
@@ -142,8 +133,8 @@ def mix_column(coluna):
                         galois_multiply(multiplicadores[2], coluna[(i + 2) % 4]) ^
                         galois_multiply(multiplicadores[3], coluna[(i + 3) % 4]))
     return resultado
-# Aplica MixColumns a toda a matriz
 
+# Aplica MixColumns a toda a matriz
 def mix_columns(matriz):
     matriz_resultante = np.zeros((4, 4), dtype=np.uint8)
     for c in range(4):
@@ -204,14 +195,13 @@ def expansao_chave(chave_inicial, tabela_substituicao, num_rodadas=10):
     chaves_rodada = [W[4*i:4*(i+1)] for i in range(num_rodadas + 1)]
     return [sum(rodada, []) for rodada in chaves_rodada]  # Concatenando as palavras de cada
 
-# Exibe a tabela de substituição
+# Exibe a tabela de substituição caso necessite
 def printa_tabela(tabela_substituicao):
     for chave, valor in tabela_substituicao.items():
         print(f"{chave:02x} -> {valor:02x}")
 
-
 def main():
-    # Gerando a chave inicial e dividindo em palavras
+    # Gerando a chave inicial e dividindo em , talvez trocar para um gerador no futuro
     chave = [0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6,
          0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c]
     # Gerar tabela de substituição inicial
@@ -222,7 +212,7 @@ def main():
 
     # Gerar tabelas compostas e inversas para as rodadas
     tabelas, tabelas_inversas = gerar_tabelas_compostas(tabela_substituicao, num_rodadas)
-
+    # Expande a chave criando todas as chaves das rodadas previamente
     chaves_rodada = expansao_chave(chave, tabela_substituicao)
 
     # Exemplo de uso
@@ -233,6 +223,7 @@ def main():
     # print("Chave da rodada:", chaves_rodada)
     
     bloco = add_round_key(bloco, chaves_rodada[0])
+    ## LOOPS DO AES
     for i in range(1,num_rodadas):
         # Substituição de bytes (SubBytes)
         bloco = substitute_bytes(bloco, tabelas[i])
@@ -244,10 +235,11 @@ def main():
         bloco = mix_columns(bloco)
         # Realiza a operação AddRoundKey com substituição aleatória
         bloco = add_round_key(bloco, chaves_rodada[i])
-
+    # FIM DO LOOP E INICIO DO ULTIMO ROUND
     bloco = substitute_bytes(bloco, tabelas[10])
     bloco = shift_rows(bloco)
     bloco = add_round_key(bloco, chaves_rodada[10])
+    ## FIM DO AES
 
     # Descriptografar o bloco
     bloco_descriptografado = decrypt(bloco, chaves_rodada, tabelas_inversas)
