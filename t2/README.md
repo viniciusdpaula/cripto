@@ -90,9 +90,11 @@ O Crivo de Eratóstenes é mais eficiente do que verificações diretas de prima
 
 #### extended_gcd(a, b)
 A função `extended_gcd` implementa o **Algoritmo de Euclides Estendido** para encontrar o **Máximo Divisor Comum/Greatest Common Divisor(MDC/GCD)** de dois números e os coeficientes que satisfazem a seguinte equação linear:
+
 $$
     a \cdot x + b \cdot y = \text{gcd}(a, b)
 $$
+
 ##### Parâmetros
 - **`a` (Inteiro):** Primeiro número inteiro.
 - **`b` (Inteiro):** Segundo número inteiro.
@@ -118,9 +120,11 @@ A função retorna:
 (6, -1, 3)
 ```
 Isso significa que:
+
 $$
     30 \cdot (-1) + 12 \cdot 3 = 6
 $$
+
 ##### Utilidade
 - **Cálculo do Inverso Modular:** Encontrar o valor de $x$ tal que $a \cdot x \equiv 1 \pmod{b}$.
 
@@ -142,9 +146,11 @@ $$
   - Deve ser **coprimo** a $\phi(n)$, ou seja, o MDC/GCD(“Máximo Divisor Comum/Greatest Common Divisor”) entre $e$ e $\phi(n)$ é igual a 1 ($\text{gcd}(e, \phi) = 1$).
 - **`phi` (Totiente de Euler):**
   - Representa $\phi(n)$, que é o produto das reduções de cada fator primo de $n$. Para $n = p \cdot q$, onde $p$ e $q$ são primos, temos:
+
     $$
         \phi(n) = (p - 1) \cdot (q - 1)
     $$
+
   - Esse valor é essencial para calcular a chave privada.
 ##### Retorno
 A função retorna o valor do inverso modular $d$, ajustado para o intervalo $[0, \phi - 1]$, se $e$ e $\phi$ forem coprimos.
@@ -159,6 +165,7 @@ Inverso modular não existe.
 
 ###### Saída:
 A função retorna $d = 23$, pois:
+
 $$
     7 \cdot 23 \equiv 1 \pmod{40}
 $$
@@ -180,7 +187,7 @@ A função retorna uma tupla $(d, p, q)$, onde:
 - **`p`** e **`q`**: Os fatores primos de $n$.
 ##### Funcionamento
 1. **Geração de Primos:**
-   - Usa a função `sieve_of_eratosthenes` para gerar uma lista de números primos até 1024.
+   - Usa a função `sieve_of_eratosthenes` para gerar uma lista de números primos até $1024$.
 2. **Fatorização de $n$:**
    - Tenta encontrar dois fatores primos $p$ e $q$ tais que $n = p \cdot q$.
    - Itera sobre a lista de números primos gerados. Para cada primo:
@@ -205,7 +212,7 @@ Isso significa que:
 - $d = 23$ é a chave privada.
 - $p = 5$, $q = 11$.
 ##### Observações
-- Esta implementação usa um limite para os números primos (1024), o que limita sua aplicação prática para $n$ maiores.
+- Esta implementação usa um limite para os números primos ($1024$), o que limita sua aplicação prática para $n$ maiores.
 - Em sistemas reais, $n$ é gerado usando primos muito maiores, tornando a fatorização computacionalmente inviável, logo mais **seguro**.
 
 [Voltar ao índice](#índice)
@@ -214,9 +221,11 @@ Isso significa que:
 
 #### encrypt_plaintext(plaintext, e, n)
 A função `encrypt_plaintext` é usada para cifrar um texto simples (“plaintext”) utilizando a **chave pública** $\{e, n\}$ com o algoritmo RSA. A cifragem transforma cada caracter do texto em um valor numérico cifrado baseado na fórmula:
+
 $$
     c \equiv m^e \pmod{n}
 $$
+
 onde:
 - $c$ é o caractere cifrado.
 - $m$ é o valor numérico do caractere original (usando o código ASCII).
@@ -265,9 +274,11 @@ A função retorna:
 
 #### decrypt_ciphertext(ciphertext, d, n)
 A função `decrypt_ciphertext` é usada para decifrar um texto cifrado utilizando a **chave privada** $d$ e o módulo $n$, com o algoritmo RSA. A decifra transforma cada bloco cifrado em seu caractere original baseado na fórmula:
+
 $$
     m \equiv c^d \pmod{n}
 $$
+
 onde:
 - $m$ é o valor decifrado do caractere original.
 - $c$ é o valor numérico cifrado (bloco cifrado).
@@ -305,17 +316,11 @@ ABC
 ```
 ##### Explicação:
 1. Para o bloco cifrado $c = 8$:
-   $$
-   m = 8^3 \mod 33 = 65 \quad \text{(caractere: “A”)}
-   $$
+   $$ m = 8^3 \mod 33 = 65 \quad \text{(caractere: “A”)} $$
 2. Para o bloco cifrado $c = 1$:
-   $$
-   m = 1^3 \mod 33 = 66 \quad \text{(caractere: “B”)}
-   $$
+   $$ m = 1^3 \mod 33 = 66 \quad \text{(caractere: “B”)} $$
 3. Para o bloco cifrado $c = 2$):
-   $$
-   m = 27^3 \mod 33 = 67 \quad \text{(caractere: “C”)}
-   $$
+   $$ m = 27^3 \mod 33 = 67 \quad \text{(caractere: “C”)} $$
 ##### Observações
 - A função pressuppõe que os blocos cifrados foram gerados corretamente com uma chave pública válida.
 - É necessário garantir que os valores de $d$ e $n$ correspondam à chave privada correta para o texto cifrado, caso contrário não funcionará.
