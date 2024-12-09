@@ -62,7 +62,7 @@ A pasta `utils/` inclui arquivos auxiliares utilizados para testes e exemplos no
 - `texto.txt`: Contém um texto usado como exemplo para ser cifrado. Este arquivo permite ao usuário ter um texto simples a disposição para ser usado como mensagem cifrada no algoritmo RSA.
 
 ##### Utilização
-- `exemplos.txt`: Abra o arquivo para consultar exemplos pré-definidos de chaves públicas $\\{e, \\n}$:
+- `exemplos.txt`: Abra o arquivo para consultar exemplos pré-definidos de chaves públicas $\\{e, n\\}$:
 ```
 (e, n)= (65537, 3233)
     e = 65537
