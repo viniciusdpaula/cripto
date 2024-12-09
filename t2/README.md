@@ -137,9 +137,11 @@ A função `mod_inverse` é utilizada para encontrar o **inverso modular** de $e
 Sem o inverso modular, não seria possível determinar $d$, tornando inviável a decriptação no RSA.
 
 Em termos matemáticos, a função encontra $d$ tal que:
+
 $$
     e \cdot d \equiv 1 \pmod{\phi(n)}
 $$
+
 ##### Parâmetros
 - **`e` (Expoente público):**
   - Um valor inteiro utilizado como parte da chave pública no RSA.
