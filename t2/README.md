@@ -85,6 +85,7 @@ A função retorna a lista:
 [2, 3, 5, 7]
 ```
 O Crivo de Eratóstenes é mais eficiente do que verificações diretas de primalidade para grandes conjuntos de números.
+
 [Voltar ao índice](#índice)
 
 ---------------------------------------------------
