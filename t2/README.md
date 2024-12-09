@@ -13,39 +13,14 @@ O projeto inclui diversas funções para realizar essas operações, como geraç
 ---------------------------------------------------
 
 ## Índice
-1. [Função `sieve_of_eratosthenes`](#sieve_of_eratostheneslimit)
-2. [Função `extended_gcd`](#extended_gcda-b)
-3. [Função `mod_inverse`](#mod_inversee-phi)
-4. [Função `find_private_key`](#find_private_keye-n)
-5. [Função `encrypt_plaintext`](#encrypt_plaintextplaintext-e-n)
-6. [Função `decrypt_ciphertext`](#decrypt_ciphertextciphertext-d-n)
-7. [Função `main`](#main)
-# Quebra RSA
 
-## Introdução
-
-Este projeto implementa o algoritmo **RSA**, um dos métodos mais conhecidos de criptografia assimétrica. A proposta do trabalho é, dado um texto cifrado com o **RSA** e sabendo que $p$ e $q$ são números primos menores que **1024(10 bits)**, criar um programa que encontre a chave privada $d$ sendo que a chave pública $\{e, n\}$ é conhecida.
-
-O programa criado foi feito da seguinte maneira:
-
-1. Fatora o módulo público $n$ para encontrar os primos $p$ e $q$.
-2. Calcula o totiente de Euler $\phi(n)$.
-3. Determina a chave privada $d$ a partir da chave pública $\{e, n\}$.
-4. Cifra e decifra mensagens utilizando as chaves geradas.
-
-O projeto inclui diversas funções para realizar essas operações, como geração de primos, cálculo do inverso modular, cifragem e decifragem de textos, além de uma interface interativa com o usuário para testar o funcionamento do sistema.
-
----------------------------------------------------
-
-## Índice
-
-1. [Função `sieve_of_eratosthenes`](#sieve_of_eratostheneslimit)
-2. [Função `extended_gcd`](#extended_gcda-b)
-3. [Função `mod_inverse`](#mod_inversee-phi)
-4. [Função `find_private_key`](#find_private_keye-n)
-5. [Função `encrypt_plaintext`](#encrypt_plaintextplaintext-e-n)
-6. [Função `decrypt_ciphertext`](#decrypt_ciphertextciphertext-d-n)
-7. [Função `main`](#main)
+1. [Função `sieve_of_eratosthenes`](#função-sieve_of_eratosthenes)
+2. [Função `extended_gcd`](#função-extended_gcd)
+3. [Função `mod_inverse`](#função-mod_inverse)
+4. [Função `find_private_key`](#função-find_private_key)
+5. [Função `encrypt_plaintext`](#função-encrypt_plaintext)
+6. [Função `decrypt_ciphertext`](#função-decrypt_ciphertext)
+7. [Função `main`](#função-main)
 8. [Diretório `utils`](#diretório-utils)
 
 ---------------------------------------------------
