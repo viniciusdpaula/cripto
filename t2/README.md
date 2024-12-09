@@ -5,7 +5,7 @@ A proposta do trabalho é, dado um texto cifrado com o **RSA** e sabendo que  $p
 O programa criado foi feito da seguinte maneira:
 1. Fatora o módulo público $n$ para encontrar os primos $p$ e $q$.
 2. Calcula o totiente de Euler $\phi(n)$.
-3. Determina a chave privada $d$ a partir da chave pública $\{e, n\}$.
+3. Determina a chave privada $d$ a partir da chave pública $ \{e, n\} $.
 4. Cifra e decifra mensagens utilizando as chaves geradas.
 
 O projeto inclui diversas funções para realizar essas operações, como geração de primos, cálculo do inverso modular, cifragem e decifragem de textos, além de uma interface interativa com o usuário para testar o funcionamento do sistema.
