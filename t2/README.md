@@ -38,7 +38,7 @@ A função `find_private_key` tenta fatorar $n$ para encontrar os valores de $p$
 [Ler mais](#find_private_keye-n)
 
 ### Função `encrypt_plaintext`
-A função `encrypt_plaintext` realiza a cifragem de um texto simples utilizando a chave pública $\{e, n\}$.
+A função `encrypt_plaintext` realiza a cifragem de um texto simples utilizando a chave pública $\\{e, n\\}$.
 [Ler mais](#encrypt_plaintextplaintext-e-n)
 
 ### Função `decrypt_ciphertext`
@@ -148,10 +148,7 @@ $$
   - Deve ser **coprimo** a $\phi(n)$, ou seja, o MDC/GCD(“Máximo Divisor Comum/Greatest Common Divisor”) entre $e$ e $\phi(n)$ é igual a 1 ($\text{gcd}(e, \phi) = 1$).
 - **`phi` (Totiente de Euler):**
   - Representa $\phi(n)$, que é o produto das reduções de cada fator primo de $n$. Para $n = p \cdot q$, onde $p$ e $q$ são primos, temos:
-
-    $$
-        \phi(n) = (p - 1) \cdot (q - 1)
-    $$
+    $\phi(n) = (p - 1) \cdot (q - 1)$
 
   - Esse valor é essencial para calcular a chave privada.
 ##### Retorno
@@ -189,7 +186,7 @@ A função retorna uma tupla $(d, p, q)$, onde:
 - **`p`** e **`q`**: Os fatores primos de $n$.
 ##### Funcionamento
 1. **Geração de Primos:**
-   - Usa a função `sieve_of_eratosthenes` para gerar uma lista de números primos até $1024$.
+   - Usa a função [sieve_of_eratosthenes](#sieve_of_eratostheneslimit) para gerar uma lista de números primos até $1024$.
 2. **Fatorização de $n$:**
    - Tenta encontrar dois fatores primos $p$ e $q$ tais que $n = p \cdot q$.
    - Itera sobre a lista de números primos gerados. Para cada primo:
@@ -200,7 +197,7 @@ A função retorna uma tupla $(d, p, q)$, onde:
 4. **Cálculo de $\phi(n)$:**
    - Usa a fórmula $\phi(n) = (p - 1) \cdot (q - 1)$.
 5. **Cálculo de $d$:**
-   - Usa a função `mod_inverse` para encontrar $d$, o inverso modular de $e$ em relação a $phi(n)$.
+   - Usa a função `mod_inverse` para encontrar $d$, o inverso modular de $e$ em relação a $\phi(n)$.
 ##### Exemplo de Uso
 ###### Entradas:
 - $e = 7$
@@ -222,7 +219,7 @@ Isso significa que:
 ---------------------------------------------------
 
 #### encrypt_plaintext(plaintext, e, n)
-A função `encrypt_plaintext` é usada para cifrar um texto simples (“plaintext”) utilizando a **chave pública** $\{e, n\}$ com o algoritmo RSA. A cifragem transforma cada caracter do texto em um valor numérico cifrado baseado na fórmula:
+A função `encrypt_plaintext` é usada para cifrar um texto simples (“plaintext”) utilizando a **chave pública** $\\{e, n\\}$ com o algoritmo RSA. A cifragem transforma cada caracter do texto em um valor numérico cifrado baseado na fórmula:
 
 $$
     c \equiv m^e \pmod{n}
@@ -318,11 +315,11 @@ ABC
 ```
 ##### Explicação:
 1. Para o bloco cifrado $c = 8$:
-   $$ m = 8^3 \mod 33 = 65 \quad \text{(caractere: “A”)} $$
+   $m = 8^3 \mod 33 = 65 \quad \text{(caractere: “A”)}$
 2. Para o bloco cifrado $c = 1$:
-   $$ m = 1^3 \mod 33 = 66 \quad \text{(caractere: “B”)} $$
-3. Para o bloco cifrado $c = 2$):
-   $$ m = 27^3 \mod 33 = 67 \quad \text{(caractere: “C”)} $$
+   $m = 1^3 \mod 33 = 66 \quad \text{(caractere: “B”)}$
+3. Para o bloco cifrado $c = 2$:
+   $m = 27^3 \mod 33 = 67 \quad \text{(caractere: “C”)}$
 ##### Observações
 - A função pressuppõe que os blocos cifrados foram gerados corretamente com uma chave pública válida.
 - É necessário garantir que os valores de $d$ e $n$ correspondam à chave privada correta para o texto cifrado, caso contrário não funcionará.
@@ -349,7 +346,7 @@ A função `main` é o ponto de entrada do programa para cifragem e decifragem u
 
     3.1. **Cifrar um Texto:**
    - Solicita ao usuário um texto simples para ser cifrado.
-   - Usa a função `encrypt_plaintext` para realizar a cifragem com os valores de $e$ e $n$.
+   - Usa a função `encrypt_plaintext` para realizar a cifragem com os valores de $\\{e, n\\}$
    - Exibe o texto cifrado como uma sequência de blocos numéricos separados por espaços.
 
    3.2. **Decifrar um Texto Cifrado:**
