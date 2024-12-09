@@ -20,6 +20,35 @@ O projeto inclui diversas funções para realizar essas operações, como geraç
 5. [Função `encrypt_plaintext`](#encrypt_plaintextplaintext-e-n)
 6. [Função `decrypt_ciphertext`](#decrypt_ciphertextciphertext-d-n)
 7. [Função `main`](#main)
+# Quebra RSA
+
+## Introdução
+
+Este projeto implementa o algoritmo **RSA**, um dos métodos mais conhecidos de criptografia assimétrica. A proposta do trabalho é, dado um texto cifrado com o **RSA** e sabendo que $p$ e $q$ são números primos menores que **1024(10 bits)**, criar um programa que encontre a chave privada $d$ sendo que a chave pública $\{e, n\}$ é conhecida.
+
+O programa criado foi feito da seguinte maneira:
+
+1. Fatora o módulo público $n$ para encontrar os primos $p$ e $q$.
+2. Calcula o totiente de Euler $\phi(n)$.
+3. Determina a chave privada $d$ a partir da chave pública $\{e, n\}$.
+4. Cifra e decifra mensagens utilizando as chaves geradas.
+
+O projeto inclui diversas funções para realizar essas operações, como geração de primos, cálculo do inverso modular, cifragem e decifragem de textos, além de uma interface interativa com o usuário para testar o funcionamento do sistema.
+
+---------------------------------------------------
+
+## Índice
+
+1. [Função `sieve_of_eratosthenes`](#sieve_of_eratostheneslimit)
+2. [Função `extended_gcd`](#extended_gcda-b)
+3. [Função `mod_inverse`](#mod_inversee-phi)
+4. [Função `find_private_key`](#find_private_keye-n)
+5. [Função `encrypt_plaintext`](#encrypt_plaintextplaintext-e-n)
+6. [Função `decrypt_ciphertext`](#decrypt_ciphertextciphertext-d-n)
+7. [Função `main`](#main)
+8. [Diretório `utils`](#diretório-utils)
+
+---------------------------------------------------
 
 ### Função `sieve_of_eratosthenes`
 A função `sieve_of_eratosthenes` é utilizada para gerar uma lista de números primos menores que um limite especificado. Ela implementa o Crivo de Eratóstenes, um algoritmo eficiente para encontrar todos os números primos em um intervalo.
@@ -48,6 +77,34 @@ A função `decrypt_ciphertext` realiza a decifragem de um texto cifrado utiliza
 ### Função `main`
 A função `main` é o ponto de entrada do programa, oferecendo uma interface interativa para o usuário inserir valores e realizar operações de cifragem e decifragem com o RSA.
 [Ler mais](#main)
+
+### Diretório `utils/`
+A pasta `utils/` inclui arquivos auxiliares utilizados para testes e exemplos no contexto deste projeto. Estes arquivos permitem entender melhor o funcionamento do sistema RSA implementado.
+
+##### Estrutura da Pasta
+- `exemplos.txt`: Contém exemplos de entrada para $\\{e, n\\}$. Estes exemplos podem ser utilizados como base para testar a cifragem e decifragem de mensagens.
+
+- `texto.txt`: Contém um texto usado como exemplo para ser cifrado. Este arquivo permite ao usuário ter um texto simples a disposição para ser usado como mensagem cifrada no algoritmo RSA.
+
+##### Utilização
+- `exemplos.txt`: Abra o arquivo para consultar exemplos pré-definidos de chaves públicas $\\{e, \\n}$:
+```
+(e, n)= (65537, 3233)
+    e = 65537
+    n = p × q = 61 × 53 = 3233
+
+(e, n) = (7, 2773)
+    e = 7
+    n = p × q = 59 × 47 = 2773
+    ....
+```
+- `texto.txt`: Use o texto contido neste arquivo como entrada para as opções **2** e **3**(Cifra e Decifra, respectivamente):
+```
+Lorem ipsum mauris augue morbi condimentum sollicitudin curabitur fusce luctus, elementum quisque suscipit ornare sodales etiam purus duis luctus at, mi venenatis in fames vitae purus porttitor tempus.
+...
+```
+
+[Voltar ao índice](#índice)
 
 ---------------------------------------------------
 
