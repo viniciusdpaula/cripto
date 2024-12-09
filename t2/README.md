@@ -1,11 +1,11 @@
 # Quebra RSA
 ## Introdução
 Este projeto implementa o algoritmo **RSA**, um dos métodos mais conhecidos de criptografia assimétrica.
-A proposta do trabalho é, dado um texto cifrado com o **RSA** e sabendo que \( p \) e \( q \) são números primos menores que **1024(10 bits)** , criar um programa que encontre a chave privada \( d \) sendo que a chave pública \( \{e, n\} \) é conhecida.
+A proposta do trabalho é, dado um texto cifrado com o **RSA** e sabendo que  $p$ e $q$ são números primos menores que **1024(10 bits)** , criar um programa que encontre a chave privada $d$ sendo que a chave pública $\{e, n\}$ é conhecida.
 O programa criado foi feito da seguinte maneira:
-1. Fatora o módulo público \( n \) para encontrar os primos \( p \) e \( q \).
-2. Calcula o totiente de Euler \( \phi(n) \).
-3. Determina a chave privada \( d \) a partir da chave pública \( \{e, n\} \).
+1. Fatora o módulo público $n$ para encontrar os primos $p$ e $q$.
+2. Calcula o totiente de Euler $\phi(n)$.
+3. Determina a chave privada $d$ a partir da chave pública $\{e, n\}$.
 4. Cifra e decifra mensagens utilizando as chaves geradas.
 
 O projeto inclui diversas funções para realizar essas operações, como geração de primos, cálculo do inverso modular, cifragem e decifragem de textos, além de uma interface interativa com o usuário para testar o funcionamento do sistema.
@@ -30,19 +30,19 @@ A função `extended_gcd` implementa o Algoritmo de Euclides Estendido para enco
 [Ler mais](#extended_gcda-b)
 
 ### Função `mod_inverse`
-A função `mod_inverse` é utilizada para encontrar o inverso modular de \( e \) em relação a \( \phi \). Este cálculo é essencial para determinar a chave privada \( d \) no algoritmo RSA.
+A função `mod_inverse` é utilizada para encontrar o inverso modular de $e$ em relação a $\phi$. Este cálculo é essencial para determinar a chave privada $d$ no algoritmo RSA.
 [Ler mais](#mod_inversee-phi)
 
 ### Função `find_private_key`
-A função `find_private_key` tenta fatorar \( n \) para encontrar os valores de \( p \) e \( q \), e utiliza o totiente de Euler para calcular a chave privada \( d \).
+A função `find_private_key` tenta fatorar $n$ para encontrar os valores de $p$ e $q$, e utiliza o totiente de Euler para calcular a chave privada $d$.
 [Ler mais](#find_private_keye-n)
 
 ### Função `encrypt_plaintext`
-A função `encrypt_plaintext` realiza a cifragem de um texto simples utilizando a chave pública \( \{e, n\} \).
+A função `encrypt_plaintext` realiza a cifragem de um texto simples utilizando a chave pública $\{e, n\}$.
 [Ler mais](#encrypt_plaintextplaintext-e-n)
 
 ### Função `decrypt_ciphertext`
-A função `decrypt_ciphertext` realiza a decifragem de um texto cifrado utilizando a chave privada \( d \) e o módulo \( n \).
+A função `decrypt_ciphertext` realiza a decifragem de um texto cifrado utilizando a chave privada $d$ e o módulo $n$.
 [Ler mais](#decrypt_ciphertextciphertext-d-n)
 
 ### Função `main`
@@ -62,10 +62,10 @@ A função `sieve_of_eratosthenes` é utilizada para gerar uma lista de **númer
 ##### Funcionamento
 1. **Inicialização:**
    - Cria uma lista chamada `sieve` onde cada índice representa um número inteiro.
-   - Inicialmente, assume que todos os números são primos (“True”), exceto 0 e 1, que são marcados como não primos (“False”).
+   - Inicialmente, assume que todos os números são primos (“True”), exceto $0$ e $1$, que são marcados como não primos (“False”).
 
 2. **Processamento:**
-   - Itera sobre os números de 2 até a raiz quadrada de `limit`.
+   - Itera sobre os números de $2$ até a raiz quadrada de `limit`.
    - Para cada número primo encontrado, marca todos os seus múltiplos como não primos (“False”).
 
 3. **Coleta de Primos:**
@@ -76,11 +76,9 @@ A função retorna uma lista contendo todos os números primos menores que o val
 
 ##### Exemplo de Uso
 ###### Entradas:
-- \( \text{limit} = 10 \)
-
+- $\text{limit} = 10$
 ###### Saída:
 A função retorna a lista:
-
 ```
 [2, 3, 5, 7]
 ```
@@ -92,27 +90,27 @@ O Crivo de Eratóstenes é mais eficiente do que verificações diretas de prima
 
 #### extended_gcd(a, b)
 A função `extended_gcd` implementa o **Algoritmo de Euclides Estendido** para encontrar o **Máximo Divisor Comum/Greatest Common Divisor(MDC/GCD)** de dois números e os coeficientes que satisfazem a seguinte equação linear:
-\[
+$$
     a \cdot x + b \cdot y = \text{gcd}(a, b)
-\]
+$$
 ##### Parâmetros
 - **`a` (Inteiro):** Primeiro número inteiro.
 - **`b` (Inteiro):** Segundo número inteiro.
 ##### Retorno
-A função retorna uma tupla \((\text{gcd}, x, y)\), onde:
-- **`gcd`**: O máximo divisor comum entre \( a \) e \( b \).
-- **`x`** e **`y`**: Os coeficientes inteiros que satisfazem a equação \( a \cdot x + b \cdot y = \text{gcd}(a, b) \).
+A função retorna uma tupla $(\text{gcd}, x, y)$, onde:
+- **`gcd`**: O máximo divisor comum entre $a$ e $b$.
+- **`x`** e **`y`**: Os coeficientes inteiros que satisfazem a equação $a \cdot x + b \cdot y = \text{gcd}(a, b)$.
 ##### Funcionamento
 1. **Caso Base:**
-   - Se \( b = 0 \), a função retorna \( (a, 1, 0) \), indicando que o MDC é \( a \) e os coeficientes são \( x = 1 \) e \( y = 0 \).
+   - Se $b = 0$, a função retorna $(a, 1, 0)$, indicando que o MDC é $a$ e os coeficientes são $x = 1$ e $y = 0$.
 2. **Recursão:**
-   - Caso contrário, a função faz uma chamada recursiva com \( (b, a \bmod b) \).
-   - Calcula os coeficientes \( x \) e \( y \) com base nos valores retornados pela chamada recursiva.
+   - Caso contrário, a função faz uma chamada recursiva com $(b, a \bmod b)$.
+   - Calcula os coeficientes $x$ e $y$ com base nos valores retornados pela chamada recursiva.
 
 ##### Exemplo de Uso
 ###### Entradas:
-- \( a = 30 \)
-- \( b = 12 \)
+- $a = 30$
+- $b = 12$
 
 ###### Saída:
 A função retorna:
@@ -120,112 +118,110 @@ A função retorna:
 (6, -1, 3)
 ```
 Isso significa que:
-\[
+$$
     30 \cdot (-1) + 12 \cdot 3 = 6
-\]
+$$
 ##### Utilidade
-- **Cálculo do Inverso Modular:** Encontrar o valor de \( x \) tal que \( a \cdot x \equiv 1 \pmod{b} \).
+- **Cálculo do Inverso Modular:** Encontrar o valor de $x$ tal que $a \cdot x \equiv 1 \pmod{b}$.
 
 [Voltar ao índice](#índice)
 
 ---------------------------------------------------
 
 #### mod_inverse(e, phi)
-A função `mod_inverse` é utilizada para encontrar o **inverso modular** de \( e \) em relação a \( \phi \). Este é um conceito fundamental na criptografia RSA, onde ele é usado para calcular a chave privada \( d \).
-Sem o inverso modular, não seria possível determinar \( d \), tornando inviável a decriptação no RSA.
+A função `mod_inverse` é utilizada para encontrar o **inverso modular** de $e$ em relação a $\phi$. Este é um conceito fundamental na criptografia RSA, onde ele é usado para calcular a chave privada $d$.
+Sem o inverso modular, não seria possível determinar $d$, tornando inviável a decriptação no RSA.
 
-Em termos matemáticos, a função encontra \( d \) tal que:
-\[
+Em termos matemáticos, a função encontra $d$ tal que:
+$$
     e \cdot d \equiv 1 \pmod{\phi(n)}
-\]
+$$
 ##### Parâmetros
 - **`e` (Expoente público):**
   - Um valor inteiro utilizado como parte da chave pública no RSA.
-  - Deve ser **coprimo** a \( \phi(n) \), ou seja, o MDC/GCD(“Máximo Divisor Comum/Greatest Common Divisor”) entre \( e \) e \( \phi(n) \) é igual a 1 (\( \text{gcd}(e, \phi) = 1 \)).
+  - Deve ser **coprimo** a $\phi(n)$, ou seja, o MDC/GCD(“Máximo Divisor Comum/Greatest Common Divisor”) entre $e$ e $\phi(n)$ é igual a 1 ($\text{gcd}(e, \phi) = 1$).
 - **`phi` (Totiente de Euler):**
-  - Representa \( \phi(n) \), que é o produto das reduções de cada fator primo de \( n \). Para \( n = p \cdot q \), onde \( p \) e \( q \) são primos, temos:
-    \[
+  - Representa $\phi(n)$, que é o produto das reduções de cada fator primo de $n$. Para $n = p \cdot q$, onde $p$ e $q$ são primos, temos:
+    $$
         \phi(n) = (p - 1) \cdot (q - 1)
-    \]
-
+    $$
   - Esse valor é essencial para calcular a chave privada.
 ##### Retorno
-A função retorna o valor do inverso modular \( d \), ajustado para o intervalo \([0, \phi - 1]\), se \( e \) e \( \phi \) forem coprimos.
-Se o inverso modular não existir (ou seja, se \( \text{gcd}(e, \phi) \neq 1 \)), a função lança uma exceção com a mensagem:
+A função retorna o valor do inverso modular $d$, ajustado para o intervalo $[0, \phi - 1]$, se $e$ e $\phi$ forem coprimos.
+Se o inverso modular não existir (ou seja, se $\text{gcd}(e, \phi) \neq 1$), a função lança uma exceção com a mensagem:
 ```
 Inverso modular não existe.
 ```
 ##### Exemplo de Uso
 ###### Entradas:
-- \( e = 7 \)
-- \( \phi = 40 \)
+- $e = 7$
+- $\phi = 40$
 
 ###### Saída:
-A função retorna \( d = 23 \), pois:
-
-\[
+A função retorna $d = 23$, pois:
+$$
     7 \cdot 23 \equiv 1 \pmod{40}
-\]
+$$
 
 [Voltar ao índice](#índice)
 
 ---------------------------------------------------
 
 #### find_private_key(e, n)
-A função `find_private_key` é usada para calcular a **chave privada** \( d \) no algoritmo RSA. Dado o expoente público \( e \) e o módulo \( n \) (produto de dois números primos \( p \) e \( q \)), a função tenta fatorar \( n \) para encontrar os valores de \( p \) e \( q \), e então calcula \( \phi(n) \) e \( d \).
+A função `find_private_key` é usada para calcular a **chave privada** $d$ no algoritmo RSA. Dado o expoente público $e$ e o módulo $n$ (produto de dois números primos $p$ e $q$), a função tenta fatorar $n$ para encontrar os valores de $p$ e $q$, e então calcula $\phi(n)$ e $d$.
 ##### Parâmetros
 - **`e` (Expoente público):**
   - Um inteiro usado na chave pública no RSA.
 - **`n` (Módulo):**
-  - O produto de dois números primos \( p \) e \( q \).
+  - O produto de dois números primos $p$ e $q$.
 ##### Retorno
-A função retorna uma tupla \((d, p, q)\), onde:
-- **`d`**: A chave privada calculada usando o inverso modular de \( e \) em relação a \( \phi(n) \).
-- **`p`** e **`q`**: Os fatores primos de \( n \).
+A função retorna uma tupla $(d, p, q)$, onde:
+- **`d`**: A chave privada calculada usando o inverso modular de $e$ em relação a $\phi(n)$.
+- **`p`** e **`q`**: Os fatores primos de $n$.
 ##### Funcionamento
 1. **Geração de Primos:**
    - Usa a função `sieve_of_eratosthenes` para gerar uma lista de números primos até 1024.
-2. **Fatorização de \( n \):**
-   - Tenta encontrar dois fatores primos \( p \) e \( q \) tais que \( n = p \cdot q \).
+2. **Fatorização de $n$:**
+   - Tenta encontrar dois fatores primos $p$ e $q$ tais que $n = p \cdot q$.
    - Itera sobre a lista de números primos gerados. Para cada primo:
-     - Verifica se \( n \% \text{primo} = 0 \), indicando que o primo é um fator de \( n \).
-     - Calcula \( q = n / p \) e verifica se \( q \) também é primo.
+     - Verifica se $n\mod \text{primo} = 0$, indicando que o primo é um fator de $n$.
+     - Calcula $q =n/p$ e verifica se $q$ também é primo.
 3. **Erro de Fatorização:**
-   - Se \( p \) ou \( q \) não forem encontrados, a função lança uma exceção.
-4. **Cálculo de \( \phi(n) \):**
-   - Usa a fórmula \( \phi(n) = (p - 1) \cdot (q - 1) \).
-5. **Cálculo de \( d \):**
-   - Usa a função `mod_inverse` para encontrar \( d \), o inverso modular de \( e \) em relação a \( \phi(n) \).
+   - Se $p$ ou $q$ não forem encontrados, a função lança uma exceção.
+4. **Cálculo de $\phi(n)$:**
+   - Usa a fórmula $\phi(n) = (p - 1) \cdot (q - 1)$.
+5. **Cálculo de $d$:**
+   - Usa a função `mod_inverse` para encontrar $d$, o inverso modular de $e$ em relação a $phi(n)$.
 ##### Exemplo de Uso
 ###### Entradas:
-- \( e = 7 \)
-- \( n = 55 \) (com os fatores primos \( p = 5 \), \( q = 11 \))
+- $e = 7$
+- $n = 55$ (com os fatores primos $p = 5$, $q = 11$)
 ###### Saída:
 A função retorna:
 ```
 (23, 5, 11)
 ```
 Isso significa que:
-- \( d = 23 \) é a chave privada.
-- \( p = 5 \), \( q = 11 \).
+- $d = 23$ é a chave privada.
+- $p = 5$, $q = 11$.
 ##### Observações
-- Esta implementação usa um limite para os números primos (1024), o que limita sua aplicação prática para \( n \) maiores.
-- Em sistemas reais, \( n \) é gerado usando primos muito maiores, tornando a fatorização computacionalmente inviável, logo mais **seguro**.
+- Esta implementação usa um limite para os números primos (1024), o que limita sua aplicação prática para $n$ maiores.
+- Em sistemas reais, $n$ é gerado usando primos muito maiores, tornando a fatorização computacionalmente inviável, logo mais **seguro**.
 
 [Voltar ao índice](#índice)
 
 ---------------------------------------------------
 
 #### encrypt_plaintext(plaintext, e, n)
-A função `encrypt_plaintext` é usada para cifrar um texto simples (“plaintext”) utilizando a **chave pública** \( \{e, n\} \) com o algoritmo RSA. A cifragem transforma cada caracter do texto em um valor numérico cifrado baseado na fórmula:
-\[
+A função `encrypt_plaintext` é usada para cifrar um texto simples (“plaintext”) utilizando a **chave pública** $\{e, n\}$ com o algoritmo RSA. A cifragem transforma cada caracter do texto em um valor numérico cifrado baseado na fórmula:
+$$
     c \equiv m^e \pmod{n}
-\]
+$$
 onde:
-- \( c \) é o caractere cifrado.
-- \( m \) é o valor numérico do caractere original (usando o código ASCII).
-- \( e \) é o expoente público da chave.
-- \( n \) é o módulo da chave.
+- $c$ é o caractere cifrado.
+- $m$ é o valor numérico do caractere original (usando o código ASCII).
+- $e$ é o expoente público da chave.
+- $n$ é o módulo da chave.
 ##### Parâmetros
 - **`plaintext` (Texto Simples):**
   - Uma string contendo o texto a ser cifrado.
@@ -239,7 +235,7 @@ A função retorna uma string contendo os valores cifrados separados por espaço
 1. **Iteração sobre o Texto:**
    - Para cada caractere do texto de entrada (`plaintext`), converte o caractere em seu valor ASCII usando `ord(char)`.
 2. **Cálculo da Cifra:**
-   - Aplica a fórmula \( c = m^e \mod n \) para cifrar o valor ASCII.
+   - Aplica a fórmula $c = m^e \bmod n$ para cifrar o valor ASCII.
 3. **Agregação dos Valores Cifrados:**
    - Converte cada valor cifrado em uma string e junta os valores separados por espaços.
 ##### Exemplo de Uso
@@ -255,34 +251,28 @@ A função retorna:
 ```
 #### Explicação:
 1. Para o caractere “A” (ASCII 65):
-   \[
-   c = 65^3 \mod 33 = 8
-   \]
+   $$c = 65^3 \bmod 33 = 8$$
 2. Para o caractere “B” (ASCII 66):
-   \[
-   c = 66^3 \mod 33 = 1
-   \]
+   $$c = 66^3 \bmod 33 = 1$$
 3. Para o caractere “C” (ASCII 67):
-   \[
-   c = 67^3 \mod 33 = 27
-   \]
+   $$c = 67^3 \bmod 33 = 27$$
 ##### Observações
-- O tamanho do texto cifrado dependerá de \( n \), pois valores maiores de \( n \) permitem cifrar caracteres ASCII mais complexos.
+- O tamanho do texto cifrado dependerá de $n$, pois valores maiores de $n$ permitem cifrar caracteres ASCII mais complexos.
 
 [Voltar ao índice](#índice)
 
 ---------------------------------------------------
 
 #### decrypt_ciphertext(ciphertext, d, n)
-A função `decrypt_ciphertext` é usada para decifrar um texto cifrado utilizando a **chave privada** \( d \) e o módulo \( n \), com o algoritmo RSA. A decifra transforma cada bloco cifrado em seu caractere original baseado na fórmula:
-\[
+A função `decrypt_ciphertext` é usada para decifrar um texto cifrado utilizando a **chave privada** $d$ e o módulo $n$, com o algoritmo RSA. A decifra transforma cada bloco cifrado em seu caractere original baseado na fórmula:
+$$
     m \equiv c^d \pmod{n}
-\]
+$$
 onde:
-- \( m \) é o valor decifrado do caractere original.
-- \( c \) é o valor numérico cifrado (bloco cifrado).
-- \( d \) é o expoente privado da chave.
-- \( n \) é o módulo da chave.
+- $m$ é o valor decifrado do caractere original.
+- $c$ é o valor numérico cifrado (bloco cifrado).
+- $d$ é o expoente privado da chave.
+- $n$ é o módulo da chave.
 ##### Parâmetros
 - **`ciphertext` (Texto Cifrado):**
   - Uma string contendo os blocos cifrados separados por espaços.
@@ -297,10 +287,10 @@ A função retorna o texto decifrado como uma string, reconstruindo os caractere
    - Divide o texto cifrado em blocos utilizando o espaço como delimitador.
 2. **Decifração de Cada Bloco:**
    - Converte cada bloco em um inteiro.
-   - Aplica a fórmula \( m = c^d \mod n \) para calcular o valor decifrado.
+   - Aplica a fórmula $m = c^d \bmod n$ para calcular o valor decifrado.
    - Converte o valor decifrado de volta para um caractere ASCII usando `chr()`.
 3. **Validação:**
-   - Verifica se cada bloco cifrado \( c \) é menor que \( n \). Caso contrário, uma exceção é lançada indicando um erro na cifra.
+   - Verifica se cada bloco cifrado $c$ é menor que $n$. Caso contrário, uma exceção é lançada indicando um erro na cifra.
 4. **Agregação dos caracteres:**
    - Junta todos os caracteres decifrados para reconstruir o texto original.
 ##### Exemplo de Uso
@@ -314,21 +304,21 @@ A função retorna:
 ABC
 ```
 ##### Explicação:
-1. Para o bloco cifrado \( c = 8 \):
-   \[
+1. Para o bloco cifrado $c = 8$:
+   $$
    m = 8^3 \mod 33 = 65 \quad \text{(caractere: “A”)}
-   \]
-2. Para o bloco cifrado \( c = 1 \):
-   \[
+   $$
+2. Para o bloco cifrado $c = 1$:
+   $$
    m = 1^3 \mod 33 = 66 \quad \text{(caractere: “B”)}
-   \]
-3. Para o bloco cifrado \( c = 27 \):
-   \[
+   $$
+3. Para o bloco cifrado $c = 2$):
+   $$
    m = 27^3 \mod 33 = 67 \quad \text{(caractere: “C”)}
-   \]
+   $$
 ##### Observações
 - A função pressuppõe que os blocos cifrados foram gerados corretamente com uma chave pública válida.
-- É necessário garantir que os valores de \( d \) e \( n \) correspondam à chave privada correta para o texto cifrado, caso contrário não funcionará.
+- É necessário garantir que os valores de $d$ e $n$ correspondam à chave privada correta para o texto cifrado, caso contrário não funcionará.
 
 [Voltar ao índice](#índice)
 
@@ -338,10 +328,10 @@ ABC
 A função `main` é o ponto de entrada do programa para cifragem e decifragem utilizando o algoritmo RSA. Ela permite que o usuário interaja com o sistema, forneça chaves públicas, realize operações de cifragem e decifragem, e visualize os resultados.
 ##### Funcionamento
 1. **Entrada de Dados:**
-   - Solicita ao usuário os valores de \( e \) (expoente público) e \( n \) (produto dos fatores primos \( p \) e \( q \)).
+   - Solicita ao usuário os valores de $e$ (expoente público) e $n$ (produto dos fatores primos $p$ e $q$).
    - Valida os dados de entrada para garantir que sejam inteiros.
 2. **Cálculo da Chave Privada:**
-   - Utiliza a função `find_private_key` para calcular a chave privada \( d \), bem como os fatores \( p \) e \( q \).
+   - Utiliza a função `find_private_key` para calcular a chave privada $d$, bem como os fatores $p$ e $q$.
    - Em caso de erro na fatorização ou no cálculo, exibe uma mensagem de erro.
 3. **Menu de Operações:**
    - Exibe um menu com as opções:
@@ -352,12 +342,12 @@ A função `main` é o ponto de entrada do programa para cifragem e decifragem u
 
     3.1. **Cifrar um Texto:**
    - Solicita ao usuário um texto simples para ser cifrado.
-   - Usa a função `encrypt_plaintext` para realizar a cifragem com os valores de \( e \) e \( n \).
+   - Usa a função `encrypt_plaintext` para realizar a cifragem com os valores de $e$ e $n$.
    - Exibe o texto cifrado como uma sequência de blocos numéricos separados por espaços.
 
    3.2. **Decifrar um Texto Cifrado:**
    - Solicita ao usuário um texto cifrado (sequência de números separados por espaços).
-   - Usa a função `decrypt_ciphertext` para realizar a decifragem com os valores de \( d \) e \( n \).
+   - Usa a função `decrypt_ciphertext` para realizar a decifragem com os valores de $d$ e $n$.
    - Exibe o texto decifrado como uma string legível.
 6. **Encerramento:**
    - O programa continua executando até que o usuário escolha a opção de sair.
@@ -365,11 +355,11 @@ A função `main` é o ponto de entrada do programa para cifragem e decifragem u
 ##### Exemplo de Uso
 ###### Fluxo:
 1. O usuário insere os valores:
-   - \( e = 7 \)
-   - \( n = 55 \)
+   - $e = 7$
+   - $n = 55$
 2. O programa calcula:
-   - \( d = 23 \)
-   - \( p = 5 \), \( q = 11 \)
+   - $d = 23$
+   - $p = 5$, $q = 11$
 3. O usuário escolhe:
    - **Opção 1 (Cifrar):**
      - Texto: `ABC`
