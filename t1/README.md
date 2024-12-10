@@ -35,11 +35,13 @@ Ele permite a **criptografia**, **descriptografia**, e **validação de desempen
   - 4.13 [criptografar()](#criptografar)
   - 4.14 [descriptografar()](#descriptografar)
   - 4.15 [descriptografar_texto()](#descriptografar_texto)
-5. [aes_openssl.py]()
+5. [aes_openssl.py](#arquivo-aes_opensslpy)
+  - 5.1 [main()](#main-1)
+  - 5.2 [processar_arquivo()](#processar_arquivo)
 6. [Requisitos](#requisitos)
 
 
----------------------------------------------------
+--------------------------------------------------
 
 ### Substituição da Caixa-S por Outra Tabela de Substituição (Cifra Monoalfabética)
 Nesta implementação, a S-BOX original foi substituída por uma **tabela de substituição gerada aleatoriamente**. Essa nova tabela utiliza o conceito de **Cifra Monoalfabética**, onde cada byte (0-255) é substituído por outro byte único.
@@ -62,7 +64,7 @@ def gerar_tabela_substituicao():
     # Cria e retorna o dicionário de substituição
     return {i: valores[i] for i in range(256)} # A chave é o índice (0-255), e o valor é o elemento correspondente da lista embaralhada
 ```
-(Ver Especificações)[#gerar_tabela_substituicao]
+[Ver Especificações](#gerar_tabela_substituicao-1)
 
 **gerar_tabela_inversa():**
 ```python
@@ -70,7 +72,7 @@ def gerar_tabela_inversa(tabela_substituicao):
     # Retorna um dicionário onde as chaves e valores da tabela de substituição são invertidos
     return {v: k for k, v in tabela_substituicao.items()}
 ```
-(Ver Especificações)[#gerar_tabela_inversa]
+[Ver Especificações](#gerar_tabela_inversatabela_substituicao)
 
 #### **Armazenamento da Tabela (key.json)**  
 A tabela de substituição gerada é armazenada em um arquivo JSON chamado **`key.json`**. O formato do arquivo contém dois elementos principais:
@@ -138,10 +140,9 @@ Ao iniciar o programa, a tabela de substituição é carregada a partir do arqui
 
 1. Durante a criptografia, a etapa de substituição (`substitute_bytes`) usa a tabela carregada do `key.json`.
 2. Na descriptografia, a tabela inversa é usada para reverter a substituição.
-
 [Voltar ao índice](#índice)
 
----------------------------------------------------
+--------------------------------------------------
 
 ### Análise de Custo Computacional do Algoritmo AES Modificado
 
@@ -236,10 +237,9 @@ O custo do AES é **linearmente proporcional ao número de blocos** de 16 bytes 
 2. A expansão de chave é linear e ocorre apenas uma vez.
 3. O uso de tabelas de substituição acelera operações de substituição de bytes.
 4. O custo computacional é linear em relação ao tamanho do texto de entrada.
-
 [Voltar ao índice](#índice)
 
----------------------------------------------------
+--------------------------------------------------
 
 ### Arquivo aes_manager.py
 #### main
@@ -310,6 +310,15 @@ A função descriptografar aplica o algoritmo AES para reverter blocos criptogra
 #### descriptografar_texto
 A função descriptografar_texto converte texto criptografado em hexadecimal para blocos, aplica o algoritmo AES para descriptografia, e retorna o texto original. É uma implementação eficiente para restaurar dados em formato legível após processos de criptografia.
 [Ler mais](#descriptografar_textoconteudo-chaves-tabela_inversa-num_rodadas10)
+
+### Arquivo aes_openssl.py
+#### main
+A função `main` gerencia a criptografia e descriptografia de um arquivo utilizando AES-256-CBC. Ela verifica a integridade dos dados processados e mede o tempo total das operações, garantindo segurança e consistência no processamento de arquivos.
+[Ler mais](#main-3)
+
+#### processar_arquivo
+A função processar_arquivo usa OpenSSL para criptografar ou descriptografar arquivos com AES-256-CBC. Ela aceita chaves e IVs em formato hexadecimal e calcula o tempo gasto na operação, retornando-o para análise. Em caso de erro, retorna `-1`. Ideal para automação de segurança de dados em arquivos
+[Ler mais](#processar_arquivoinput_file-output_file-chave-iv-operacao)
 
 ---------------------------------------------------
 
@@ -1449,6 +1458,119 @@ print("Texto Original Descriptografado:", texto_original)
 --------------------------------------------------
 
 ### aes_openssl.py
+#### main()
+A função `main` é o ponto de entrada do programa, gerenciando o processo de criptografia e descriptografia de um arquivo utilizando o algoritmo AES-256-CBC. Ela solicita ao usuário o arquivo de entrada, realiza a criptografia, descriptografia, e verifica a integridade dos dados comparando o arquivo original com o resultado descriptografado.
+
+##### Funcionamento
+1. **Solicitação do Arquivo de Entrada:**
+   - O programa solicita ao usuário o caminho do arquivo a ser processado.
+   - Verifica se o arquivo existe antes de continuar.
+
+2. **Configuração dos Arquivos de Saída:**
+   - Define os caminhos para os arquivos criptografado e descriptografado.
+
+3. **Geração de Chave e IV:**
+   - Gera uma chave de 256 bits e um vetor de inicialização (IV) de 128 bits utilizando `os.urandom`.
+
+4. **Processo de Criptografia:**
+   - Criptografa o arquivo de entrada, salva o resultado e mede o tempo gasto.
+
+5. **Processo de Descriptografia:**
+   - Descriptografa o arquivo criptografado e mede o tempo total (incluindo criptografia e descriptografia).
+
+6. **Verificação de Integridade:**
+   - Lê e compara o conteúdo do arquivo original com o arquivo descriptografado.
+   - Exibe o resultado da verificação e o tempo total de processamento.
+
+7. **Tratamento de Erros:**
+   - Captura e exibe erros relacionados ao acesso ou comparação dos arquivos.
+
+##### Exemplo de Uso
+1. O programa solicita ao usuário o caminho do arquivo de entrada:
+```bash
+Digite o caminho do arquivo de entrada: arquivo.txt
+```
+2. Após a execução, exibe:
+```bash
+Verificação: Descriptografia
+Bem-sucedida: True 
+Tempo total 0.123456 segundos
+```
+
+##### Observações
+- Os arquivos criptografados e descriptografados são salvos nos diretórios configurados na função.
+- O programa gera chaves e IVs de forma aleatória a cada execução.
+- Para garantir que os arquivos sejam processados corretamente, é necessário que o OpenSSL esteja configurado no ambiente.
+[Voltar ao índice](#índice)
+
+#### processar_arquivo(input_file, output_file, chave, iv, operacao)
+A função `processar_arquivo` utiliza o comando OpenSSL para criptografar ou descriptografar arquivos. Ela suporta o algoritmo AES-256-CBC e realiza operações baseadas em uma chave e um vetor de inicialização (IV) fornecidos pelo usuário.
+
+##### Argumentos
+- **`input_file`** (`str`):
+  - Caminho para o arquivo de entrada que será processado.
+- **`output_file`** (`str`):
+  - Caminho para o arquivo de saída onde o resultado será salvo.
+- **`chave`** (`str`):
+  - Chave criptográfica em formato hexadecimal representando 32 bytes (256 bits).
+- **`iv`** (`str`):
+  - Vetor de inicialização (IV) em formato hexadecimal representando 16 bytes (128 bits).
+- **`operacao`** (`str`):
+  - Tipo de operação a ser realizada:
+    - `"-e"` para criptografia.
+    - `"-d"` para descriptografia.
+
+##### Retorno
+- **`float`**:
+  - Tempo (em segundos) gasto na operação de criptografia ou descriptografia.
+  - Retorna `-1` em caso de falha na execução.
+
+##### Exceções
+- **`ValueError`**:
+  - Lançada se a operação especificada não for válida.
+- **`Exception`**:
+  - Lançada para erros gerais durante a execução do comando OpenSSL.
+
+##### Funcionamento
+1. **Validação da Operação:**
+   - Verifica se a operação é válida (`-e` para criptografar, `-d` para descriptografar).
+   - Lança um erro se a operação for inválida.
+
+2. **Configuração do Comando OpenSSL:**
+   - Monta o comando OpenSSL com os parâmetros fornecidos.
+
+3. **Execução do Comando:**
+   - Marca o tempo inicial antes da execução.
+   - Executa o comando usando `subprocess.run`.
+
+4. **Cálculo do Tempo de Execução:**
+   - Calcula o tempo decorrido durante a execução do comando.
+   - Exibe o tempo gasto no console.
+
+5. **Tratamento de Erros:**
+   - Captura erros relacionados ao subprocess ou gerais e exibe mensagens claras.
+
+##### Exemplo de Uso
+```python
+# Parâmetros de entrada
+input_file = "entrada.txt"
+output_file = "saida.enc"
+chave = "603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4"
+iv = "000102030405060708090a0b0c0d0e0f"
+operacao = "-e"  # Criptografar
+
+# Processa o arquivo
+tempo = processar_arquivo(input_file, output_file, chave, iv, operacao)
+if tempo != -1:
+    print(f"Operação concluída em {tempo:.6f} segundos.")
+else:
+    print("Erro na operação.")
+```
+##### Observações
+- O OpenSSL deve estar instalado e configurado no ambiente para que a função funcione.
+- A chave e o IV devem estar no formato hexadecimal e corresponder aos tamanhos esperados (32 bytes para chave e 16 bytes para IV).
+- Essa função é útil para integrar processos de criptografia e descriptografia baseados em arquivos.
+[Voltar ao índice](#índice)
 
 --------------------------------------------------
 
@@ -1461,6 +1583,7 @@ print("Texto Original Descriptografado:", texto_original)
    - `sys`
    - `time`
    - `json`
+   - `subprocess`
    - `typing`: Modules
       - `Dict`
       - `Any`
