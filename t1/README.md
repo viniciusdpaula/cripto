@@ -1,170 +1,352 @@
-### **Documentação do Trabalho AES**
+# **Documentação do Projeto AES**
 
-#### **Objetivo**
-O objetivo do trabalho é implementar uma versão simplificada do AES (Advanced Encryption Standard) substituindo a Caixa-S por outra cifra de substituição e comparar o custo de sua execução com uma implementação do AES utilizando a OpenSSL. Decidimos substituir a Caixa-S por uma cifra monoalfabética. Ele permite criptografar e descriptografar arquivos de texto em dois modos de operação:
+## **Descrição Geral**
+O projeto implementa uma versão personalizada do AES (Advanced Encryption Standard) substituindo a S-Box padrão por uma **cifra monoalfabética personalizada**. Ele permite a **criptografia**, **descriptografia**, e **validação de desempenho** comparada à implementação do AES utilizando OpenSSL.
 
 - **`-c` (Criptografar):** Converte um texto em um formato criptografado e salva no arquivo `texto_criptografado.txt`.
 - **`-d` (Descriptografar):** Converte o texto criptografado de volta ao formato original e salva no arquivo `texto_descriptografado.txt`.
-- **`-v` (Analise):** Converte um texto em um formato criptografado e converto para seu formato original.Além disso faz o calculo de tempo para criptografar e descriptografar.
----
-
-### **Arquitetura do Código**
-
-O programa está dividido em 3 arquivos principais:
-2. **`aes.py`:** Implementa as operações principais do AES, como as transformações `MixColumns`, `ShiftRows`, e funções de criptografia/descriptografia.
-3. **`main.py`:** Controla o fluxo principal do programa, lidando com entrada e saída de dados, e gerencia os modos de operação (`-c` e `-d`).
+- **`-v` (Verificação Completa):** Realiza o fluxo completo de criptografia e descriptografia, comparando a saída com o texto original e reportando os tempos de execução.
 
 ---
 
-### **Descrição dos Arquivos**
+## **Arquitetura do Projeto**
+
+### **Diretórios**
+1. **`code/`**:  
+   Contém os arquivos de código principais.
+   
+2. **`utils/`**:  
+   Contém arquivos utilitários como tabelas de substituição e chaves.
+
+3. **`textos/`**:  
+   Contém arquivos de texto usados para testes.
+
+4. **`saidas/`**:  
+   Contém os resultados das operações, como arquivos criptografados e descriptografados.
 
 
-#### **2. `aes.py`**
-Este arquivo contém a implementação do algoritmo AES além de utilitários usados em várias partes do programa.
+### **Estrutura de Arquivos**
+1. **`aes_manager.py`**:  
+   Controla o fluxo principal do programa (criptografia, descriptografia, validação).
 
-**Funções:**
-- **`galois_multiply(a, b)`**
-  - Realiza a multiplicação de dois números no campo de Galois \( GF(2^8) \) usando o polinômio irreduzível \( x^8 + x^4 + x^3 + x + 1 \) (0x11B).
-  - **Entrada:** Dois inteiros `a` e `b`.
-  - **Saída:** Resultado da multiplicação.
+2. **`aes_core.py`**:  
+   Implementa as operações internas do AES, incluindo manipulação de texto, tabelas de substituição e transformações.
 
-- **`verificar_chave(chave)`**
-  - Valida se a chave fornecida é uma lista de 16 bytes.
-  - **Entrada:** Uma lista de inteiros.
-  - **Saída:** `True` se válida, caso contrário, `False`.
+3. **`aes_openssl.py`**:  
+   Integra o projeto com OpenSSL para comparações de desempenho.
 
-- **`verificar_tabela(tabela)`**
-  - Valida se uma tabela de substituição contém 256 valores exclusivos.
-  - **Entrada:** Um dicionário.
-  - **Saída:** `True` se válida, caso contrário, `False`.
-  ### A caixa S foi substituida por uma tabela de substituição 
-- **`gerar_tabela_substituicao()`**
-  - Gera uma tabela de substituição aleatória.
-  - **Saída:** Um dicionário com 256 valores mapeados.
-
-- **`gerar_tabela_inversa(tabela_substituicao)`**
-  - Gera a tabela inversa (S-Box inversa) a partir de uma tabela de substituição.
-  - **Entrada:** Um dicionário representando a tabela.
-  - **Saída:** Um dicionário representando a tabela inversa.
-
-- **`texto_para_blocos(texto)`**
-  - Divide o texto em blocos de 16 bytes e converte para matrizes 4x4.
-  - **Entrada:** Uma string.
-  - **Saída:** Lista de blocos (matrizes 4x4).
-
-- **`blocos_para_texto(blocos)`**
-  - Converte blocos de matrizes 4x4 de volta para uma string.
-  - **Entrada:** Lista de blocos (matrizes 4x4).
-  - **Saída:** Uma string.
+4. **`key.json`**:  
+   Contém a tabela de substituição e a chave de criptografia.
   
-- **`mix_columns(matriz, inverso=False)`**
-  - Aplica a operação `MixColumns` ou sua inversa em uma matriz 4x4.
-  - **Entrada:** Matriz 4x4 (`np.array`), booleano `inverso`.
-  - **Saída:** Matriz transformada.
+---
 
-- **`substitute_bytes(matriz, tabela)`**
-  - Aplica substituições de bytes em uma matriz usando a tabela de substituição fornecida.
-  - **Entrada:** Matriz 4x4 e tabela de substituição.
-  - **Saída:** Matriz transformada.
+## **Descrição dos Arquivos e Funções**
 
-- **`shift_rows(matriz, inverso=False)`**
-  - Aplica a operação `ShiftRows` ou sua inversa em uma matriz 4x4.
-  - **Entrada:** Matriz 4x4 (`np.array`), booleano `inverso`.
-  - **Saída:** Matriz transformada.
+### **1. Arquivo `aes_manager.py`**
+Gerencia o fluxo principal de execução. Define a classe `GerenciadorAES`, que centraliza as operações de criptografia, descriptografia e verificação.
 
-- **`add_round_key(matriz_bloco, chave_rodada)`**
-  - Aplica a chave de rodada a um bloco (matriz 4x4) usando XOR.
-  - **Entrada:** Matriz 4x4 e chave expandida.
-  - **Saída:** Matriz transformada.
+#### **Funções e Métodos**
 
-- **`expansao_chave(chave_inicial, tabela_substituicao, num_rodadas=10)`**
-  - Gera as chaves expandidas para todas as rodadas do AES.
-  - **Entrada:** Chave inicial (16 bytes), tabela de substituição, número de rodadas.
-  - **Saída:** Lista de chaves expandidas.
+##### **Classe `GerenciadorAES`**
+1. **`carregar_arquivo_json(nome_arquivo)`**
+   - **Descrição:**  
+     Lê um arquivo JSON, garantindo que ele exista e esteja formatado corretamente.
+   - **Parâmetros:**
+     - `nome_arquivo` (str): Caminho do arquivo JSON.
+   - **Retorno:**  
+     Um dicionário contendo os dados do arquivo.
+   - **Exemplo:**
+     ```python
+     dados = GerenciadorAES.carregar_arquivo_json("key.json")
+     ```
 
-- **`criptografar(blocos, chaves, tabela, num_rodadas=10)`**
-  - Criptografa blocos de texto usando o AES.
-  - **Entrada:** Lista de blocos, chaves expandidas, tabela de substituição.
-  - **Saída:** Lista de blocos criptografados.
+2. **`salvar_arquivo_json(nome_arquivo, dados)`**
+   - **Descrição:**  
+     Salva um dicionário em formato JSON em um arquivo.
+   - **Parâmetros:**
+     - `nome_arquivo` (str): Caminho do arquivo JSON.
+     - `dados` (dict): Dados a serem salvos.
+   - **Retorno:**  
+     Nenhum.
 
-- **`descriptografar(blocos, chaves, tabela_inversa, num_rodadas=10)`**
-  - Descriptografa blocos de texto usando o AES.
-  - **Entrada:** Lista de blocos criptografados, chaves expandidas, tabela inversa.
-  - **Saída:** Lista de blocos descriptografados.
+3. **`criptografar_arquivo(arquivo_entrada, arquivo_saida)`**
+   - **Descrição:**  
+     Realiza a criptografia de um arquivo.
+   - **Parâmetros:**
+     - `arquivo_entrada` (str): Caminho do arquivo de texto a ser criptografado.
+     - `arquivo_saida` (str): Caminho do arquivo onde a saída será salva.
+   - **Retorno:**  
+     Tempo de criptografia (float).
 
-- **`descriptografar_arquivo(nome_arquivo, chaves, tabela_inversa, num_rodadas=10)`**
-  - Lê um arquivo criptografado, converte-o em blocos e descriptografa.
-  - **Entrada:** Nome do arquivo, chaves expandidas, tabela inversa.
-  - **Saída:** Texto descriptografado.
+4. **`descriptografar_arquivo(arquivo_entrada, arquivo_saida)`**
+   - **Descrição:**  
+     Realiza a descriptografia de um arquivo.
+   - **Parâmetros:**
+     - `arquivo_entrada` (str): Caminho do arquivo criptografado.
+     - `arquivo_saida` (str): Caminho do arquivo onde o texto descriptografado será salvo.
+   - **Retorno:**  
+     Tempo de descriptografia (float).
+
+5. **`processar_arquivo(arquivo_original)`**
+   - **Descrição:**  
+     Realiza a verificação completa, criptografando e descriptografando o arquivo original.
+   - **Parâmetros:**
+     - `arquivo_original` (str): Caminho do arquivo de texto original.
+   - **Retorno:**  
+     Um relatório com o tempo total de processamento e a comparação dos textos.
+
+##### **Função `main()`**
+- **Descrição:**  
+  Define o ponto de entrada do programa, processando os argumentos da linha de comando.
+- **Parâmetros:**  
+  Nenhum diretamente (processa `sys.argv`).
+- **Retorno:**  
+  Nenhum.
 
 ---
 
-#### **3. `main.py`**
-Controla o fluxo principal do programa e gerencia os modos de operação.
+### **2. Arquivo `aes_core.py`**
+Implementa as operações fundamentais do AES.
 
-**Funções:**
-- **`carregar_arquivo_json(nome_arquivo)`**
-  - Lê um arquivo JSON e corrige o formato das tabelas, garantindo que as chaves sejam inteiras.
-  - **Entrada:** Nome do arquivo JSON.
-  - **Saída:** Dados carregados (tabelas e chave).
+#### **Funções**
 
-- **`salvar_arquivo_json(nome_arquivo, dados)`**
-  - Salva os dados fornecidos em um arquivo JSON.
-  - **Entrada:** Nome do arquivo JSON e dados.
+1. **`galois_multiply(a, b)`**
+   - **Descrição:**  
+     Realiza a multiplicação no campo de Galois GF(2⁸), usada em `MixColumns`.
+   - **Parâmetros:**
+     - `a` (int): Primeiro número.
+     - `b` (int): Segundo número.
+   - **Retorno:**  
+     Resultado da multiplicação (int).
 
-- **`salvar_texto_criptografado(blocos, nome_arquivo="texto_criptografado.txt")`**
-  - Salva os blocos criptografados em um arquivo no formato hexadecimal.
-  - **Entrada:** Lista de blocos criptografados, nome do arquivo.
+2. **`gerar_tabela_substituicao()` e `gerar_tabela_inversa(tabela)`**
+   - **Descrição:**  
+     Gera uma tabela de substituição e sua tabela inversa.
+   - **Parâmetros:**  
+     - Para `gerar_tabela_inversa`: `tabela` (dict).
+   - **Retorno:**  
+     - `dict`: Tabela gerada.
 
-- **`main()`**
-  - Ponto de entrada do programa.
-  - Gerencia os modos `-c` e `-d`:
-    - **`-c`:** Criptografa o texto de entrada e salva em `texto_criptografado.txt`.
-    - **`-d`:** Descriptografa o arquivo criptografado e salva em `texto_descriptografado.txt`.
+3. **`texto_para_blocos(texto)` e `blocos_para_texto(blocos)`**
+   - **Descrição:**  
+     Convertem texto para blocos de 16 bytes e vice-versa.
+   - **Parâmetros:**
+     - `texto` (str): Texto de entrada.
+     - `blocos` (list): Lista de blocos.
+   - **Retorno:**  
+     Texto ou blocos convertidos.
 
----
+4. **Transformações do AES**
+   - **`substitute_bytes`**, **`shift_rows`**, **`mix_columns`**, **`add_round_key`**:  
+     Executam transformações específicas do AES.
 
-### **Exemplo de Uso**
-1. **Criptografar um Arquivo:**
-   ```bash
-   python main.py -c texto.txt
-   ```
-   - Gera `texto_criptografado.txt` contendo o texto criptografado.
+5. **`expansao_chave(chave_inicial, tabela_substituicao)`**
+   - **Descrição:**  
+     Expande uma chave inicial para gerar chaves de rodada.
+   - **Parâmetros:**
+     - `chave_inicial` (list): Lista de 16 bytes.
+     - `tabela_substituicao` (dict): Tabela.
+   - **Retorno:**  
+     Lista de chaves expandidas.
 
-2. **Descriptografar um Arquivo:**
-   ```bash
-   python main.py -d texto_criptografado.txt
-   ```
-   - Gera `texto_descriptografado.txt` contendo o texto original.
-
----
-
-### **Estrutura de Saída**
-### Seram gerados arquivos como saidas para cada execução 
-
-### **Executando no modo c** 
-1. **Arquivo Criptografado**
-### *Executando no modo d** 
-1. **Arquivo Descriptografado**
-### **Executando no modo v** 
-1. **Arquivo Criptografado**
-2. **Arquivo Descriptografado**
-3. **Arquivo com o texto original para comparação**
-4. **Relatorio**
-
-#### Arquivo Criptografado (`texto_criptografado.txt`):
-- Cada byte é representado em hexadecimal.
-- Exemplo:
-  ```
-  2b7e151628aed2a6
-  abf7158809cf4f3c
-  ```
-
-#### Arquivo Descriptografado (`texto_descriptografado.txt`):
-- Contém o texto original em UTF-8.
+6. **`criptografar` e `descriptografar`**
+   - **Descrição:**  
+     Criptografa ou descriptografa uma lista de blocos.
+   - **Parâmetros:**  
+     Blocos, chaves e tabela de substituição (ou inversa).
+   - **Retorno:**  
+     Lista de blocos criptografados ou descriptografados.
 
 ---
 
-### **Requisitos**
-- **Bibliotecas:** `numpy`, `random`, `json`, `sys`, `os`.
-- **Entrada:** Arquivos de texto em UTF-8.
+### **3. Arquivo `aes_openssl.py`**
+Integra o projeto com o OpenSSL para comparações de desempenho.
+
+#### **Funções**
+
+1. **`processar_arquivo(input_file, output_file, chave, iv, operacao)`**
+   - **Descrição:**  
+     Usa o OpenSSL para criptografar ou descriptografar arquivos.
+   - **Parâmetros:**
+     - `input_file` (str): Caminho do arquivo de entrada.
+     - `output_file` (str): Caminho do arquivo de saída.
+     - `chave` (bytes): Chave de criptografia.
+     - `iv` (bytes): Vetor de inicialização.
+     - `operacao` (str): `-e` para criptografia ou `-d` para descriptografia.
+   - **Retorno:**  
+     Tempo de execução (float).
+
+---
+
+## **Análise de Custo Computacional do Algoritmo AES**
+
+1. **SubBytes**: Substitui cada byte da matriz de estado pela tabela de substituição (S-Box).
+2. **ShiftRows**: Desloca as linhas da matriz de estado.
+3. **MixColumns**: Realiza uma operação linear nas colunas da matriz de estado.
+4. **AddRoundKey**: Aplica uma operação XOR entre a matriz de estado e a chave da rodada.
+
+---
+
+### **1. SubBytes (Substituição de Bytes)**
+- **Descrição:**  
+  Cada byte da matriz de estado (totalizando 16 bytes) é substituído por um valor correspondente na tabela de substituição **S-Box**.
+
+- **Custo Computacional:**
+  - A tabela de substituição é uma operação de **busca constante (O(1))** para cada byte.
+  - Total de 16 bytes no estado, portanto 16 buscas são realizadas.
+  - **Custo:** \( O(16) \).
+
+---
+
+### **2. ShiftRows (Deslocamento de Linhas)**
+- **Custo Computacional:**
+  - Total de **3 linhas deslocadas** (linha 0 não é deslocada).
+  - **Custo:** \( O(12) \) (pois 3 linhas são deslocadas e cada deslocamento afeta 4 elementos).
+
+---
+
+### **3. MixColumns (Mistura de Colunas)**
+- **Custo Computacional:**
+  - Como há 4 colunas, o custo total para **MixColumns** é:
+    - \( 4 \text{ colunas} \times (4 \text{ multiplicações} + 3 \text{ XORs}) = 16 \text{ multiplicações} + 12 \text{ XORs} \).
+  - **Custo:** \( O(16) \).
+
+---
+
+### **4. AddRoundKey (Adição da Chave de Rodada)**
+- **Custo Computacional:**
+  - Cada operação XOR entre dois bytes tem custo \( O(1) \).
+  - Como são feitas 16 operações XOR, o custo é:
+  - **Custo:** \( O(16) \).
+
+---
+
+### **5. Expansão de Chave**
+- **Custo Computacional:**
+  - Cada chave de rodada envolve a aplicação de **substituição** e **XOR**.
+  - A chave inicial de 16 bytes é expandida em 44 palavras de 4 bytes, gerando as chaves de rodada.
+  - **Custo total:** \( O(40) \), considerando 10 rodadas de expansão e as substituições e XORs necessárias.
+
+---
+
+## **Análise de Custo por Rodada**
+
+### **Custo por Rodada de Criptografia**
+Cada rodada de criptografia realiza as operações **SubBytes**, **ShiftRows**, **MixColumns**, e **AddRoundKey**:
+
+| Fase            | Custo por Operação | Operações por Rodada | Custo Total |
+|------------------|--------------------|-----------------------|-------------|
+| **SubBytes**     | \( O(1) \)         | 16                    | \( O(16) \) |
+| **ShiftRows**    | \( O(1) \)         | 12                    | \( O(12) \) |
+| **MixColumns**   | \( O(1) \)         | 16                    | \( O(16) \) |
+| **AddRoundKey**  | \( O(1) \)         | 16                    | \( O(16) \) |
+| **Total por Rodada** |                  |                       | **\( O(60) \)** |
+
+#### Última Rodada (Sem MixColumns)
+**MixColumns** não é executado:
+
+| Fase            | Custo por Operação | Operações por Rodada | Custo Total |
+|------------------|--------------------|-----------------------|-------------|
+| **SubBytes**     | \( O(1) \)         | 16                    | \( O(16) \) |
+| **ShiftRows**    | \( O(1) \)         | 12                    | \( O(12) \) |
+| **AddRoundKey**  | \( O(1) \)         | 16                    | \( O(16) \) |
+| **Total (Última Rodada)** |               |                       | **\( O(44) \)** |
+
+---
+
+## **Custo Total do Algoritmo**
+
+Considerando **10 rodadas** de AES:
+
+- **9 Rodadas Completas** (com **MixColumns**):  
+  \( 9 \times O(60) = O(540) \).
+
+- **Última Rodada** (sem **MixColumns**):  
+  \( O(44) \).
+
+- **Expansão de Chave**:  
+  \( O(40) \) para gerar as chaves de rodada.
+
+- **Custo Total para Criptografia/Descriptografia:**  
+  \( O(540 + 44 + 40) = O(624) \).
+
+---
+
+## **Custo do Texto de Entrada**
+O custo do AES é **linearmente proporcional ao número de blocos** de 16 bytes no texto de entrada:
+
+1. **Texto de 32 bytes (2 blocos):**  
+   \( O(2 \times 624) = O(1248) \).
+
+2. **Texto de 160 bytes (10 blocos):**  
+   \( O(10 \times 624) = O(6240) \).
+
+3. **Texto de 1024 bytes (64 blocos):**  
+   \( O(64 \times 624) = O(39936) \).
+
+---
+
+## **Considerações**
+1. **MixColumns** é a operação mais cara devido às multiplicações no campo de Galois.
+2. A última rodada elimina **MixColumns**, reduzindo o custo.
+3. A expansão de chave é linear e ocorre apenas uma vez.
+4. O uso de tabelas de substituição acelera operações de substituição de bytes.
+6. O custo computacional é linear em relação ao tamanho do texto de entrada.
+
+---
+
+## **Exemplo de Execução**
+
+### **1. Criptografia `-c`**
+Comando:
+```bash
+python aes_manager.py -c exemplo.txt
+```
+Saída: `../utils/saidas/texto_criptografado.txt`
+Tempo de criptografia: 0.007567 segundos
+---
+
+### **2. Descriptografia `-d`**
+Comando:
+```bash
+python aes_manager.py -d exemplo.txt
+```
+Saída: `../utils/saidas/texto_descriptografado.txt`
+Total de bytes convertidos: 32
+Tempo de descriptografia: 0.005801 segundos
+---
+
+### **3. Verificação Completa `-v`**
+Comando:
+```bash
+python aes_manager.py -v exemplo.txt
+```
+Resultado:
+Tempo de criptografia: 0.005078 segundos
+Total de bytes convertidos: 32
+Tempo de descriptografia: 0.018146 segundos    
+Tempo total de processamento: 0.031357 segundos
+Processamento concluído
+---
+
+### **Estruturas de Saída**
+1. Arquivo criptografado (`.txt`):  
+   Texto criptografado em formato hexadecimal.
+   
+2. Arquivo descriptografado (`.txt`):  
+   Texto original restaurado, idêntico ao original.
+
+3. Log de comparação (`comparacao_textos.txt`):  
+   Detalhes da verificação, incluindo tempos de execução.
+
+---
+
+## **Requisitos**
+1. **Python 3.8+**
+2. **Bibliotecas Necessárias:**
+   - `numpy`
+   - `json`
+   - `subprocess`
+3. **OpenSSL**.
+
+---
