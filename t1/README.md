@@ -48,52 +48,37 @@ Gerencia o fluxo principal de execução. Define a classe `GerenciadorAES`, que 
 #### **Funções e Métodos**
 
 ##### **Classe `GerenciadorAES`**
-1. **`carregar_arquivo_json(nome_arquivo)`**
-   - **Descrição:**  
-     Lê um arquivo JSON, garantindo que ele exista e esteja formatado corretamente.
-   - **Parâmetros:**
-     - `nome_arquivo` (str): Caminho do arquivo JSON.
-   - **Retorno:**  
-     Um dicionário contendo os dados do arquivo.
-   - **Exemplo:**
-     ```python
-     dados = GerenciadorAES.carregar_arquivo_json("key.json")
-     ```
+- **`__init__(self, arquivo_dados="../utils/key.json")`**
+  - Inicializa o gerenciador, carregando as configurações (chave e tabela de substituição) de um arquivo JSON.
 
-2. **`salvar_arquivo_json(nome_arquivo, dados)`**
-   - **Descrição:**  
-     Salva um dicionário em formato JSON em um arquivo.
-   - **Parâmetros:**
-     - `nome_arquivo` (str): Caminho do arquivo JSON.
-     - `dados` (dict): Dados a serem salvos.
-   - **Retorno:**  
-     Nenhum.
+- **`carregar_configuracoes(self)`**
+  - Carrega ou cria as configurações (chave e tabela de substituição) a partir de um arquivo JSON. Se o arquivo estiver corrompido ou não existir, ele cria novos valores padrão.
 
-3. **`criptografar_arquivo(arquivo_entrada, arquivo_saida)`**
+2. **`criptografar_arquivo(arquivo_entrada, arquivo_saida)`**
    - **Descrição:**  
      Realiza a criptografia de um arquivo.
    - **Parâmetros:**
      - `arquivo_entrada` (str): Caminho do arquivo de texto a ser criptografado.
      - `arquivo_saida` (str): Caminho do arquivo onde a saída será salva.
    - **Retorno:**  
-     Tempo de criptografia (float).
+     Caminho do arquivo onde a saída será salva.
 
-4. **`descriptografar_arquivo(arquivo_entrada, arquivo_saida)`**
+3. **`descriptografar_arquivo(arquivo_entrada, arquivo_saida)`**
    - **Descrição:**  
      Realiza a descriptografia de um arquivo.
    - **Parâmetros:**
      - `arquivo_entrada` (str): Caminho do arquivo criptografado.
      - `arquivo_saida` (str): Caminho do arquivo onde o texto descriptografado será salvo.
    - **Retorno:**  
-     Tempo de descriptografia (float).
+     Caminho do arquivo onde o texto descriptografado será salvo.
 
-5. **`processar_arquivo(arquivo_original)`**
+4. **`processar_arquivo(arquivo_original)`**
    - **Descrição:**  
      Realiza a verificação completa, criptografando e descriptografando o arquivo original.
    - **Parâmetros:**
      - `arquivo_original` (str): Caminho do arquivo de texto original.
    - **Retorno:**  
-     Um relatório com o tempo total de processamento e a comparação dos textos.
+     Resultado do precessamento.
 
 ##### **Função `main()`**
 - **Descrição:**  
@@ -303,7 +288,7 @@ Comando:
 python aes_manager.py -c exemplo.txt
 ```
 Saída: `../utils/saidas/texto_criptografado.txt`
-Tempo de criptografia: 0.007567 segundos
+## Tempo de criptografia: 0.007567 segundos
 ---
 
 ### **2. Descriptografia `-d`**
@@ -312,8 +297,8 @@ Comando:
 python aes_manager.py -d exemplo.txt
 ```
 Saída: `../utils/saidas/texto_descriptografado.txt`
-Total de bytes convertidos: 32
-Tempo de descriptografia: 0.005801 segundos
+## Total de bytes convertidos: 32
+## Tempo de descriptografia: 0.005801 segundos
 ---
 
 ### **3. Verificação Completa `-v`**
@@ -321,12 +306,12 @@ Comando:
 ```bash
 python aes_manager.py -v exemplo.txt
 ```
-Resultado:
-Tempo de criptografia: 0.005078 segundos
-Total de bytes convertidos: 32
-Tempo de descriptografia: 0.018146 segundos    
-Tempo total de processamento: 0.031357 segundos
-Processamento concluído
+## Resultado:
+## Tempo de criptografia: 0.005078 segundos
+## Total de bytes convertidos: 32
+## Tempo de descriptografia: 0.018146 segundos    
+## Tempo total de processamento: 0.031357 segundos
+## Processamento concluído
 ---
 
 ### **Estruturas de Saída**
