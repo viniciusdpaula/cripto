@@ -141,6 +141,7 @@ Ao iniciar o programa, a tabela de substituição é carregada a partir do arqui
 
 1. Durante a criptografia, a etapa de substituição (`substitute_bytes`) usa a tabela carregada do `key.json`.
 2. Na descriptografia, a tabela inversa é usada para reverter a substituição.
+
 [Voltar ao índice](#índice)
 
 ---
@@ -232,8 +233,10 @@ O custo do AES é **linearmente proporcional ao número de blocos** de 16 bytes 
 2. A expansão de chave é linear e ocorre apenas uma vez.
 3. O uso de tabelas de substituição acelera operações de substituição de bytes.
 4. O custo computacional é linear em relação ao tamanho do texto de entrada.
+
 [Voltar ao índice](#índice)
 
+---
 ---
 
 ### Arquivo aes_manager.py
@@ -405,6 +408,7 @@ Uso: python main.py <-c|-d|-p> <caminho do arquivo>
         '-d': Descriptografar um arquivo
         '-p': Processamento completo. Mostrando o Tempo para criptografar, Total de Bytes convertidos, Tempo para descriptografar & Tempo total de Processamento 
 ```
+
 [Voltar ao índice](#índice)
 
 ---
@@ -428,6 +432,7 @@ Uso: python main.py <-c|-d|-p> <caminho do arquivo>
 
 - **[`processar_arquivo(arquivo_original)`](#processar_arquivoself-arquivo_original)**:
   - Realiza o fluxo completo de criptografia e descriptografia, comparando o texto descriptografado com o original e exibindo métricas detalhadas.
+
 [Voltar ao índice](#índice)
 
 ---
@@ -452,6 +457,7 @@ O método `__init__` da classe `GerenciadorAES` é responsável por inicializar 
 ##### Observações
 - Este método é projetado para garantir flexibilidade no gerenciamento de configurações, permitindo o uso de arquivos específicos ou de um padrão predefinido.
 - Caso o arquivo de configurações seja inválido ou não exista, o sistema assegura que padrões válidos sejam definidos e salvos automaticamente.
+
 [Voltar ao índice](#índice)
 
 ---
@@ -505,7 +511,9 @@ print(tabela_normalizada)
 - Este método é chamado internamente pela função carregar_configuracoes para validar a tabela carregada de um arquivo.
 - Entradas inválidas não interrompem a execução do programa, mas são ignoradas com uma notificação no console.
 - A normalização é essencial para garantir o funcionamento correto do algoritmo AES, que depende de tabelas de substituição bem definidas.
+
 [Voltar ao índice](#índice)
+
 ---
 
 #### `carregar_configuracoes(self)`
@@ -557,6 +565,7 @@ gerenciador.carregar_configuracoes()
 - Este método é chamado automaticamente durante a inicialização do GerenciadorAES.
 - Garante que o sistema esteja em um estado válido, mesmo que o arquivo JSON seja inválido ou ausente.
 - Todas as operações são projetadas para garantir que as configurações sejam persistentes e reutilizáveis.
+
 [Voltar ao índice](#índice)
 
 ---
@@ -611,6 +620,7 @@ Para um arquivo de entrada com o texto "Exemplo":
 - O método é projetado para lidar apenas com arquivos de texto. Formatos binários podem exigir ajustes adicionais.
 - O conteúdo criptografado é retornado em formato hexadecimal, ideal para armazenamento ou transmissão.
 - Exceções são tratadas para garantir que falhas como arquivo inexistente sejam devidamente notificadas ao usuário.
+
 [Voltar ao índice](#índice)
 
 ---
@@ -671,6 +681,7 @@ Para um arquivo criptografado com conteúdo hexadecimal "`1a2b3c4d...`":
 - O método é flexível, aceitando tanto arquivos quanto strings diretamente.
 - A descriptografia depende da integridade da tabela inversa e das chaves previamente carregadas.
 - Mensagens de erro informativas são exibidas para auxiliar o usuário em caso de falhas.
+
 [Voltar ao índice](#índice)
 
 ---
@@ -730,7 +741,9 @@ Para um arquivo original com o texto "Exemplo":
 - Este método é útil para validar a integridade do processo de criptografia e descriptografia.
 - Caso o conteúdo descriptografado não seja igual ao original, uma mensagem de erro é exibida.
 - Mensagens claras ajudam a identificar problemas em etapas específicas do fluxo.
+
 [Voltar ao índice](#índice)
+
 ---
 ---
 
@@ -768,7 +781,10 @@ print(hex(resultado))  # Saída: 0xc1
 ##### Observações
 - A função é essencial em operações de criptografia como AES, onde a multiplicação no campo Galois é usada para mixagem de colunas.
 - O uso do polinômio irreduzível 0x11B é padrão para GF(2⁸).
+
 [Voltar ao índice](#índice)
+
+---
 
 #### gerar_tabela_substituicao()
 A função `gerar_tabela_substituicao` cria uma tabela de substituição aleatória, que é um dicionário mapeando cada byte (valores de 0 a 255) para outro valor único e aleatório no mesmo intervalo. Essa tabela é comumente usada em criptografia para operações de substituição.
@@ -799,6 +815,7 @@ print(tabela)
 ##### Observações
 - A tabela gerada garante que cada byte tem exatamente um mapeamento único.
 - Essa abordagem é útil em sistemas criptográficos para introduzir não-linearidade.
+
 [Voltar ao índice](#índice)
 
 ---
@@ -835,7 +852,10 @@ print(tabela_inversa)
 ##### Observações
 - A tabela original deve conter mapeamentos únicos e completos para garantir a validade da inversão.
 - A tabela inversa é utilizada principalmente em processos de descriptografia, revertendo transformações aplicadas por uma tabela de substituição.
+
 [Voltar ao índice](#índice)
+
+---
 
 #### texto_para_blocos(texto)
 A função `texto_para_blocos` divide um texto em blocos de 16 bytes, adicionando padding quando necessário. Essa operação é usada para preparar o texto para criptografia no modo AES, que exige blocos de tamanho fixo de 16 bytes (128 bits).
@@ -874,6 +894,7 @@ for bloco in blocos:
 ##### Observações
 - A função utiliza padding para garantir que o tamanho do texto seja sempre um múltiplo de 16 bytes, necessário para o modo de operação do AES.
 - Cada bloco é representado como uma matriz numpy 4x4, facilitando operações no campo criptográfico.
+
 [Voltar ao índice](#índice)
 
 ---
@@ -915,6 +936,7 @@ print(texto)
 ##### Observações
 - A função não remove padding automaticamente. Se o texto original tinha padding, ele será incluído na saída.
 - Cada bloco deve ter tamanho 4x4, representando 16 bytes de dados processados.
+
 [Voltar ao índice](#índice)
 
 ---
@@ -953,6 +975,7 @@ print(lista_bytes)
 ##### Observações
 - A função retorna todos os bytes em uma única lista linear, preservando a ordem em que aparecem nos blocos.
 - É frequentemente usada para serialização de dados, como ao gravar blocos criptografados em arquivos.
+
 [Voltar ao índice](#índice)
 
 ---
@@ -992,6 +1015,7 @@ print(texto)
 ##### Observações
 - A função ignora erros de decodificação, garantindo robustez ao lidar com listas de bytes que possam conter valores inválidos.
 - O uso de rstrip('\x00') assegura que padding adicionado durante a criptografia seja removido.
+
 [Voltar ao índice](#índice)
 
 ---
@@ -1052,6 +1076,7 @@ print(resultado_inverso)
 - MixColumns utiliza operações no campo finito GF(2⁸), implementadas pela função [galois_multiply](#galois_multiplya-b).
 - A operação é crucial para garantir a difusão no AES, tornando o algoritmo mais resistente a ataques.
 - A matriz de entrada e saída deve ser do tipo numpy.uint8 para garantir compatibilidade.
+
 [Voltar ao índice](#índice)
 
 ---
@@ -1099,6 +1124,7 @@ print(matriz_substituida)
 ##### Observações
 - A tabela de substituição personalizada deve mapear todos os valores de byte (0-255) para evitar erros durante a substituição.
 - É uma operação essencial para introduzir não-linearidade em algoritmos criptográficos, aumentando a resistência a ataques.
+
 [Voltar ao índice](#índice)
 
 ---
@@ -1158,6 +1184,7 @@ print(matriz_shift_inversa)
 ##### Observações
 - A linha 0 da matriz permanece inalterada durante a operação.
 - A direção do deslocamento é controlada pelo parâmetro inverso, permitindo o uso do mesmo método para criptografia e descriptografia.
+
 [Voltar ao índice](#índice)
 
 ---
@@ -1213,6 +1240,7 @@ print(resultado)
 ##### Observações
 - **AddRoundKey** é uma operação reversível, pois o $XOR$ aplicado com a mesma chave restaura os dados originais.
 - A matriz da chave deve ser representada exatamente como uma lista de 16 bytes.
+
 [Voltar ao índice](#índice)
 
 ---
@@ -1272,6 +1300,7 @@ for i, chave in enumerate(chaves_expandidas):
 - A chave inicial deve ter exatamente 16 bytes para garantir compatibilidade com o AES.
 - A tabela de substituição (S-Box) deve mapear todos os valores de byte (0-255) para evitar erros durante a expansão.
 - O número de rodadas pode ser ajustado para diferentes tamanhos de chave (por exemplo, 12 ou 14 rodadas).
+
 [Voltar ao índice](#índice)
 
 ---
@@ -1348,6 +1377,7 @@ for bloco in blocos_criptografados:
 - Cada bloco deve ser uma matriz 4x4 para compatibilidade com as transformações do AES.
 - As chaves expandidas devem ser pré-geradas e correspondentes ao número de rodadas definido.
 - A tabela de substituição deve mapear todos os valores de byte (0-255).
+
 [Voltar ao índice](#índice)
 
 ---
@@ -1425,6 +1455,7 @@ for bloco in blocos_descriptografados:
 - A ordem inversa das rodadas é fundamental para reverter a criptografia.
 - As chaves expandidas e a S-Box inversa devem ser correspondentes às usadas na criptografia.
 - Cada bloco deve ser uma matriz 4x4 para compatibilidade com as transformações do AES.
+
 [Voltar ao índice](#índice)
 
 ---
@@ -1489,6 +1520,7 @@ print("Texto Original Descriptografado:", texto_original)
 - O conteúdo criptografado deve estar no formato hexadecimal, sem espaços ou separadores.
 - A tabela inversa (S-Box inversa) e as chaves expandidas devem ser correspondentes às usadas na criptografia.
 - Padding (zeros adicionais) é removido automaticamente ao final do processo.
+
 [Voltar ao índice](#índice)
 
 ---
@@ -1538,6 +1570,7 @@ Tempo total 0.123456 segundos
 - Os arquivos criptografados e descriptografados são salvos nos diretórios configurados na função.
 - O programa gera chaves e IVs de forma aleatória a cada execução.
 - Para garantir que os arquivos sejam processados corretamente, é necessário que o OpenSSL esteja configurado no ambiente.
+
 [Voltar ao índice](#índice)
 
 ---
@@ -1609,6 +1642,7 @@ else:
 - O OpenSSL deve estar instalado e configurado no ambiente para que a função funcione.
 - A chave e o IV devem estar no formato hexadecimal e corresponder aos tamanhos esperados (32 bytes para chave e 16 bytes para IV).
 - Essa função é útil para integrar processos de criptografia e descriptografia baseados em arquivos.
+
 [Voltar ao índice](#índice)
 
 ---
@@ -1653,4 +1687,5 @@ Para utilizar esses arquivos de texto com o algoritmo AES Modificado:
       - `Dict`
       - `Any`
 3. **OpenSSL**.
+
 [Voltar ao índice](#índice)
