@@ -19,7 +19,22 @@ Ele permite a **criptografia**, **descriptografia**, e **validação de desempen
     - 3.2.4 [criptografar_arquivo()](#criptografar_arquivoself-arquivo_entrada-option)
     - 3.2.5 [descriptografar_arquivo()](#descriptografar_arquivoself-arquivo_entrada-textonone)
     - 3.2.6 [processar_arquivo()](#processar_arquivoself-arquivo_original)
-4. [aes_core.py]()
+4. [aes_core.py](#arquivo-aes_corepy)
+  - 4.1 [galois_multiply()](#galois_multiply)
+  - 4.2 [gerar_tabela_substituicao()](#gerar_tabela_substituicao)
+  - 4.3 [gerar_tabela_inversa()](#gerar_tabela_inversa)
+  - 4.4 [texto_para_blocos()](#texto_para_blocos)
+  - 4.5 [blocos_para_texto()](#blocos_para_texto)
+  - 4.6 [blocos_para_lista_bytes()](#blocos_para_lista_bytes)
+  - 4.7 [bytes_para_texto()](#bytes_para_texto)
+  - 4.8 [mix_columns()](#mix_columns)
+  - 4.9 [substitute_bytes()](#substitute_bytes)
+  - 4.10 [shift_rows()](#shift_rows)
+  - 4.11 [add_round_key()](#add_round_key)
+  - 4.12 [expansao_chave()](#expansao_chave)
+  - 4.13 [criptografar()](#criptografar)
+  - 4.14 [descriptografar()](#descriptografar)
+  - 4.15 [descriptografar_texto()](#descriptografar_texto)
 5. [aes_openssl.py]()
 6. [Requisitos](#requisitos)
 
@@ -233,10 +248,68 @@ O arquivo aes_manager.py gerencia o fluxo principal de operações do AES person
 
 #### GerenciadorAES
 O `GerenciadorAES` é uma classe que encapsula as principais funcionalidades do algoritmo AES modificado. Ele gerencia operações de criptografia e descriptografia de arquivos, incluindo o carregamento e normalização de tabelas de substituição, geração de chaves, e execução de fluxos de processamento completos com medições de desempenho. É o núcleo do sistema AES implementado.
-
 [Ler mais](#gerenciadoraes-1)
 
 ### Arquivo aes_core.py
+#### galois_multiply
+A função galois_multiply implementa multiplicação no campo finito GF(2⁸) utilizando redução polinomial. É comumente usada em algoritmos de criptografia como o AES para garantir operações matemáticas seguras e consistentes.
+[Ler mais](#galois_multiplya-b)
+
+#### gerar_tabela_substituicao
+A função gerar_tabela_substituicao cria um dicionário que embaralha de forma aleatória os valores entre 0 e 255, garantindo unicidade. É um componente essencial em nosso sistemas criptográfico para criar operações de substituição seguras e imprevisíveis.
+[Ler mais](#gerar_tabela_substituicao-1)
+
+#### gerar_tabela_inversa
+A função gerar_tabela_inversa cria uma tabela que reverte os mapeamentos de uma tabela de substituição, trocando chaves e valores. É um componente fundamental para a etapa de descriptografia em nosso sistema que utiliza substituições criptográficas.
+[Ler mais](#gerar_tabela_inversatabela_substituicao)
+
+#### texto_para_blocos
+A função texto_para_blocos prepara textos para criptografia no modo AES, dividindo-os em blocos de tamanho fixo de 16 bytes com padding. Os blocos são retornados como matrizes 4x4, facilitando sua manipulação no algoritmo.
+[Ler mais](#texto_para_blocostexto)
+
+#### blocos_para_texto
+A função blocos_para_texto converte blocos processados de dados (em formato de matrizes 4x4) de volta para uma string de texto legível, facilitando a recuperação de dados criptografados ou descriptografados.
+[Ler mais](#blocos_para_textoblocos)
+
+#### blocos_para_lista_bytes
+A função blocos_para_lista_bytes converte blocos estruturados (matrizes 4x4) em uma lista linear de bytes. Ela é ideal para operações que exigem uma representação sequencial de dados, como escrita ou análise direta.
+[Ler mais](#blocos_para_lista_bytesblocos)
+
+#### bytes_para_texto
+A função bytes_para_texto decodifica listas de bytes em strings legíveis usando UTF-8, removendo padding adicional. Ela é uma etapa crucial para recuperar textos originais após processos de criptografia ou manipulação de dados.
+[Ler mais](#bytes_para_textolista_bytes)
+
+#### mix_columns
+A função mix_columns implementa a operação de mistura de colunas do AES, aplicando transformações lineares no campo Galois. É usada tanto na criptografia quanto na descriptografia, sendo essencial para a difusão de dados no algoritmo.
+[Ler mais](#mix_columnsmatriz-inversofalse)
+
+#### substitute_bytes
+A função substitute_bytes substitui bytes de uma matriz 4x4 utilizando uma tabela de substituição personalizada. Ela é equivalente à etapa SubBytes do AES, mas permite flexibilidade no uso de tabelas customizadas, sendo crucial para operações criptográficas.
+[Ler mais](#substitute_bytesmatriz-tabela)
+
+#### shift_rows
+A função shift_rows implementa a etapa de deslocamento de linhas do AES, misturando os bytes da matriz. Ela desloca linhas para a esquerda ou para a direita, dependendo do modo de operação, sendo fundamental para difundir os dados no estado do AES.
+[Ler mais](#shift_rowsmatriz-inversofalse)
+
+#### add_round_key
+A função add_round_key combina a matriz de estado atual com a chave da rodada utilizando a operação XOR. Essa etapa garante a integração direta da chave criptográfica ao processo de transformação do AES modificado, sendo fundamental para a segurança do algoritmo.
+[Ler mais](#add_round_keymatriz_bloco-chave_rodada)
+
+#### expansao_chave
+A função expansao_chave gera uma sequência de chaves únicas para cada rodada do AES modificado, garantindo segurança por meio de substituições, deslocamentos e operações XOR. É essencial para o funcionamento do algoritmo, fornecendo chaves específicas para cada etapa de criptografia ou descriptografia.
+[Ler mais](#expansao_chavechave_inicial-tabela_substituicao-num_rodadas10)
+
+#### criptografar
+A função criptografar aplica o algoritmo AES para transformar blocos de dados em blocos criptografados. Ela utiliza operações como [SubBytes](#substitute_bytesmatriz-tabela), [ShiftRows](#shift_rowsmatriz-inversofalse), [MixColumns](#mix_columnsmatriz-inversofalse), e [AddRoundKey](#add_round_keymatriz_bloco-chave_rodada), repetindo-as em rodadas para garantir segurança e difusão no processo de criptografia.
+[Ler mais](#criptografarblocos-chaves-tabela-num_rodadas10)
+
+#### descriptografar
+A função descriptografar aplica o algoritmo AES para reverter blocos criptografados, utilizando operações como [AddRoundKey](#add_round_keymatriz_bloco-chave_rodada), [SubBytes inverso](#substitute_bytesmatriz-tabela), [ShiftRows inverso](#shift_rowsmatriz-inversofalse), e [MixColumns inverso](#mix_columnsmatriz-inversofalse). Ela restaura os dados originais com segurança, seguindo as etapas do AES em ordem inversa.
+[Ler mais](#descriptografarblocos-chaves-tabela_inversa-num_rodadas10)
+
+#### descriptografar_texto
+A função descriptografar_texto converte texto criptografado em hexadecimal para blocos, aplica o algoritmo AES para descriptografia, e retorna o texto original. É uma implementação eficiente para restaurar dados em formato legível após processos de criptografia.
+[Ler mais](#descriptografar_textoconteudo-chaves-tabela_inversa-num_rodadas10)
 
 ---------------------------------------------------
 
@@ -636,12 +709,742 @@ Para um arquivo original com o texto "Exemplo":
 - Este método é útil para validar a integridade do processo de criptografia e descriptografia.
 - Caso o conteúdo descriptografado não seja igual ao original, uma mensagem de erro é exibida.
 - Mensagens claras ajudam a identificar problemas em etapas específicas do fluxo.
-
 [Voltar ao índice](#índice)
 
 --------------------------------------------------
 
 ### aes_core.py
+#### galois_multiply(a, b)
+A função `galois_multiply` realiza a multiplicação de dois números no campo finito GF(2⁸), seguindo as regras específicas do campo. Ela utiliza o polinômio irreduzível `0x11B` para modular os resultados que excedem 8 bits, garantindo a conformidade com as operações no campo Galois.
+
+##### Argumentos
+- **`a`** (`int`): 
+  - Primeiro número (multiplicando).
+- **`b`** (`int`): 
+  - Segundo número (multiplicador).
+
+##### Retorno
+- **`int`**: 
+  - Resultado da multiplicação no campo finito GF(2⁸).
+
+##### Funcionamento
+1. **Inicialização do Acumulador:**
+   - Inicia o produto como `0`.
+
+2. **Multiplicação com Redução Polinomial:**
+   - Realiza a operação XOR (`p ^= a`) sempre que o bit menos significativo de `b` é `1`.
+   - Desloca `a` para a esquerda e aplica a redução polinomial com `0x11B` se `a` ultrapassar 8 bits.
+   - Desloca `b` para a direita até que todos os bits sejam processados.
+
+3. **Retorno do Resultado:**
+   - Retorna o valor final acumulado no produto.
+
+##### Exemplo de Uso
+```python
+resultado = galois_multiply(0x57, 0x83)
+print(hex(resultado))  # Saída: 0xc1
+```
+##### Observações
+- A função é essencial em operações de criptografia como AES, onde a multiplicação no campo Galois é usada para mixagem de colunas.
+- O uso do polinômio irreduzível 0x11B é padrão para GF(2⁸).
+[Voltar ao índice](#índice)
+
+#### gerar_tabela_substituicao()
+A função `gerar_tabela_substituicao` cria uma tabela de substituição aleatória, que é um dicionário mapeando cada byte (valores de 0 a 255) para outro valor único e aleatório no mesmo intervalo. Essa tabela é comumente usada em criptografia para operações de substituição.
+
+##### Retorno
+- **`dict`**:
+  - Um dicionário com 256 entradas, onde:
+    - As chaves são valores originais (0-255).
+    - Os valores são números únicos e aleatórios no intervalo (0-255).
+
+##### Funcionamento
+1. **Geração de Valores Originais:**
+   - Cria uma lista de todos os números de 0 a 255.
+
+2. **Embaralhamento dos Valores:**
+   - Usa a função `random.shuffle` para reorganizar a lista de forma aleatória.
+
+3. **Criação da Tabela de Substituição:**
+   - Mapeia cada índice da lista embaralhada para o valor correspondente.
+   - Retorna o resultado como um dicionário.
+
+##### Exemplo de Uso
+```python
+tabela = gerar_tabela_substituicao()
+print(tabela)
+# Saída: {0: 34, 1: 56, ..., 255: 12} (valores aleatórios)
+```
+##### Observações
+- A tabela gerada garante que cada byte tem exatamente um mapeamento único.
+- Essa abordagem é útil em sistemas criptográficos para introduzir não-linearidade.
+[Voltar ao índice](#índice)
+
+#### gerar_tabela_inversa(tabela_substituicao)
+A função `gerar_tabela_inversa` cria uma tabela inversa a partir de uma tabela de substituição fornecida. A tabela inversa é essencial para operações de descriptografia, permitindo que os valores substituídos sejam mapeados de volta às suas chaves originais.
+
+##### Argumentos
+- **`tabela_substituicao`** (`dict`):
+  - Tabela de substituição original, onde cada chave (0-255) é mapeada para um valor único (0-255).
+
+##### Retorno
+- **`dict`**:
+  - Tabela inversa, onde:
+    - As chaves e valores da tabela original são trocados.
+    - O valor substituído na tabela original torna-se a chave, e a chave original torna-se o valor.
+
+##### Funcionamento
+1. **Inversão de Chaves e Valores:**
+   - Usa compreensão de dicionário para inverter os pares chave-valor da tabela original.
+   - As chaves da tabela de substituição tornam-se os valores da tabela inversa, e vice-versa.
+
+2. **Retorno da Tabela Inversa:**
+   - Retorna um dicionário contendo a tabela invertida.
+
+##### Exemplo de Uso
+```python
+tabela_substituicao = {0: 34, 1: 56, 2: 78}
+tabela_inversa = gerar_tabela_inversa(tabela_substituicao)
+print(tabela_inversa)
+# Saída: {34: 0, 56: 1, 78: 2}
+```
+
+##### Observações
+- A tabela original deve conter mapeamentos únicos e completos para garantir a validade da inversão.
+- A tabela inversa é utilizada principalmente em processos de descriptografia, revertendo transformações aplicadas por uma tabela de substituição.
+[Voltar ao índice](#índice)
+
+#### texto_para_blocos(texto)
+A função `texto_para_blocos` divide um texto em blocos de 16 bytes, adicionando padding quando necessário. Essa operação é usada para preparar o texto para criptografia no modo AES, que exige blocos de tamanho fixo de 16 bytes (128 bits).
+
+##### Argumentos
+- **`texto`** (`str`):
+  - O texto a ser convertido em blocos.
+
+##### Retorno
+- **`list`**:
+  - Uma lista de blocos, onde cada bloco é representado como uma matriz 4x4 de inteiros (`numpy.uint8`).
+
+##### Funcionamento
+1. **Conversão para Bytes:**
+   - Converte o texto em sua representação em bytes usando a codificação UTF-8.
+
+2. **Adição de Padding:**
+   - Calcula o número de bytes de padding necessários para que o texto seja múltiplo de 16.
+   - Adiciona bytes de valor `0` (`\x00`) ao final do texto para preencher o espaço restante.
+
+3. **Divisão em Blocos:**
+   - Divide o texto ajustado em segmentos de 16 bytes.
+   - Cada segmento é convertido em uma matriz 4x4 de inteiros.
+
+4. **Retorno dos Blocos:**
+   - Retorna uma lista contendo todas as matrizes 4x4 geradas.
+
+##### Exemplo de Uso
+```python
+texto = "Exemplo de texto"
+blocos = texto_para_blocos(texto)
+for bloco in blocos:
+    print(bloco)
+# Saída: Matrizes 4x4 representando os blocos do texto
+```
+##### Observações
+- A função utiliza padding para garantir que o tamanho do texto seja sempre um múltiplo de 16 bytes, necessário para o modo de operação do AES.
+- Cada bloco é representado como uma matriz numpy 4x4, facilitando operações no campo criptográfico.
+[Voltar ao índice](#índice)
+
+#### blocos_para_texto(blocos)
+A função `blocos_para_texto` converte uma lista de blocos de dados em uma string de texto legível. É usada para transformar dados processados (criptografados ou descriptografados) de volta ao formato original.
+
+##### Argumentos
+- **`blocos`** (`list`):
+  - Lista de blocos, onde cada bloco é uma matriz `numpy` 4x4 contendo inteiros (`uint8`).
+
+##### Retorno
+- **`str`**:
+  - O texto resultante da concatenação dos blocos.
+
+##### Funcionamento
+1. **Iteração pelos Blocos:**
+   - Percorre cada bloco na lista fornecida.
+
+2. **Conversão de Bytes:**
+   - Para cada linha em um bloco, converte cada byte (inteiro) em um caractere (`chr`).
+
+3. **Concatenação:**
+   - Concatena os caracteres de todas as linhas de todos os blocos em uma única string.
+
+4. **Retorno:**
+   - Retorna a string resultante da concatenação.
+
+##### Exemplo de Uso
+```python
+import numpy as np
+
+# Exemplo de blocos 4x4
+blocos = [np.array([[69, 120, 101, 109], [112, 108, 111, 0], [0, 0, 0, 0], [0, 0, 0, 0]], dtype=np.uint8)]
+texto = blocos_para_texto(blocos)
+print(texto)
+# Saída: "Exemplo"
+```
+##### Observações
+- A função não remove padding automaticamente. Se o texto original tinha padding, ele será incluído na saída.
+- Cada bloco deve ter tamanho 4x4, representando 16 bytes de dados processados.
+[Voltar ao índice](#índice)
+
+#### blocos_para_lista_bytes(blocos)
+A função `blocos_para_lista_bytes` transforma uma lista de blocos (matrizes 4x4) em uma sequência linear de bytes. Essa conversão é útil para operações que requerem uma representação plana de dados, como gravação em arquivos ou comparações.
+
+##### Argumentos
+- **`blocos`** (`list`):
+  - Lista de blocos, onde cada bloco é uma matriz `numpy` 4x4 contendo inteiros (`uint8`).
+
+##### Retorno
+- **`list`**:
+  - Uma lista linear contendo os bytes de todos os blocos em sequência. Cada elemento é um valor inteiro entre 0 e 255.
+
+##### Funcionamento
+1. **Iteração pelos Blocos:**
+   - Percorre cada bloco na lista fornecida.
+
+2. **Extração de Bytes:**
+   - Para cada linha em um bloco, percorre cada byte e o adiciona à lista linear.
+
+3. **Retorno da Lista Linear:**
+   - Retorna a sequência de bytes resultante.
+
+##### Exemplo de Uso
+```python
+import numpy as np
+
+# Exemplo de blocos 4x4
+blocos = [np.array([[69, 120, 101, 109], [112, 108, 111, 0], [0, 0, 0, 0], [0, 0, 0, 0]], dtype=np.uint8)]
+lista_bytes = blocos_para_lista_bytes(blocos)
+print(lista_bytes)
+# Saída: [69, 120, 101, 109, 112, 108, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+```
+##### Observações
+- A função retorna todos os bytes em uma única lista linear, preservando a ordem em que aparecem nos blocos.
+- É frequentemente usada para serialização de dados, como ao gravar blocos criptografados em arquivos.
+[Voltar ao índice](#índice)
+
+#### bytes_para_texto(lista_bytes)
+A função `bytes_para_texto` converte uma lista de bytes em uma string de texto legível. Ela utiliza a codificação UTF-8 para decodificar os valores e remove padding adicional, como bytes nulos, ao final do texto.
+
+##### Argumentos
+- **`lista_bytes`** (`list`):
+  - Uma lista de bytes (valores inteiros de 0 a 255) que será convertida em texto.
+
+##### Retorno
+- **`str`**:
+  - Uma string de texto resultante da decodificação da lista de bytes.
+
+##### Funcionamento
+1. **Conversão para Objeto `bytes`:**
+   - Transforma a lista de inteiros em um objeto do tipo `bytes`.
+
+2. **Decodificação para UTF-8:**
+   - Converte os bytes para uma string utilizando a codificação UTF-8.
+   - O parâmetro `errors='ignore'` ignora valores inválidos durante a decodificação.
+
+3. **Remoção de Padding:**
+   - Remove bytes nulos (`\x00`) adicionais ao final da string usando `rstrip('\x00')`.
+
+4. **Retorno do Texto:**
+   - Retorna a string decodificada e limpa.
+
+##### Exemplo de Uso
+```python
+lista_bytes = [69, 120, 101, 109, 112, 108, 111, 0, 0, 0]
+texto = bytes_para_texto(lista_bytes)
+print(texto)
+# Saída: "Exemplo"
+```
+##### Observações
+- A função ignora erros de decodificação, garantindo robustez ao lidar com listas de bytes que possam conter valores inválidos.
+- O uso de rstrip('\x00') assegura que padding adicionado durante a criptografia seja removido.
+[Voltar ao índice](#índice)
+
+#### mix_columns(matriz, inverso=False)
+A função `mix_columns` implementa a operação **MixColumns** do AES, que realiza uma mistura linear dos bytes em cada coluna de uma matriz 4x4. Essa operação é essencial para difundir os dados no algoritmo AES, podendo ser usada tanto para criptografia quanto para descriptografia.
+
+##### Argumentos
+- **`matriz`** (`numpy.ndarray`):
+  - Matriz 4x4 (`uint8`) representando o estado atual dos dados no AES.
+- **`inverso`** (`bool`, opcional):
+  - Se `True`, executa a versão inversa da operação (para descriptografia). Por padrão, realiza a operação para criptografia.
+
+##### Retorno
+- **`numpy.ndarray`**:
+  - Matriz 4x4 resultante após a operação MixColumns.
+
+##### Funcionamento
+1. **Definição de Multiplicadores:**
+   - Utiliza diferentes conjuntos de multiplicadores no campo Galois (GF(2⁸)):
+     - `multiplicadores_mix` para criptografia.
+     - `multiplicadores_mix_inv` para descriptografia.
+
+2. **Seleção do Modo:**
+   - Escolhe o conjunto de multiplicadores com base no argumento `inverso`.
+
+3. **Processamento por Coluna:**
+   - Para cada coluna da matriz:
+     - Calcula o novo valor de cada byte aplicando a operação no campo Galois (com `galois_multiply`) e acumulando os resultados com XOR.
+
+4. **Construção da Matriz Resultante:**
+   - Substitui os valores das colunas pela nova matriz resultante.
+
+5. **Retorno:**
+   - Retorna a matriz 4x4 processada.
+
+##### Exemplo de Uso
+```python
+import numpy as np
+
+# Exemplo de matriz 4x4
+matriz = np.array([
+    [0xd4, 0xbf, 0x5d, 0x30],
+    [0xe0, 0xb4, 0x52, 0xae],
+    [0xb8, 0x41, 0x11, 0xf1],
+    [0x1e, 0x27, 0x98, 0xe5]
+], dtype=np.uint8)
+
+# Aplicar MixColumns para criptografia
+resultado = mix_columns(matriz)
+print(resultado)
+
+# Aplicar MixColumns inverso para descriptografia
+resultado_inverso = mix_columns(matriz, inverso=True)
+print(resultado_inverso)
+```
+##### Observações
+- MixColumns utiliza operações no campo finito GF(2⁸), implementadas pela função [galois_multiply](#galois_multiplya-b).
+- A operação é crucial para garantir a difusão no AES, tornando o algoritmo mais resistente a ataques.
+- A matriz de entrada e saída deve ser do tipo numpy.uint8 para garantir compatibilidade.
+[Voltar ao índice](#índice)
+
+#### substitute_bytes(matriz, tabela)
+A função `substitute_bytes` substitui cada byte de uma matriz 4x4 pelos valores correspondentes em uma tabela de substituição personalizada. Ela realiza uma operação semelhante à etapa **SubBytes** do AES, mas utilizando uma tabela definida pelo usuário em vez da S-Box padrão.
+
+##### Argumentos
+- **`matriz`** (`numpy.ndarray`):
+  - Matriz 4x4 (`uint8`) representando os dados do estado no AES.
+- **`tabela`** (`dict`):
+  - Tabela de substituição personalizada que mapeia cada byte (0-255) para seu valor correspondente.
+
+##### Retorno
+- **`numpy.ndarray`**:
+  - Matriz 4x4 (`uint8`) com os bytes substituídos de acordo com a tabela fornecida.
+
+##### Funcionamento
+1. **Substituição dos Bytes:**
+   - Utiliza a função `np.vectorize` para aplicar a tabela de substituição a cada elemento da matriz.
+   - Cada byte da matriz é substituído pelo valor correspondente na tabela.
+
+2. **Retorno da Nova Matriz:**
+   - Retorna uma nova matriz 4x4 com os bytes substituídos.
+
+##### Exemplo de Uso
+```python
+import numpy as np
+
+# Exemplo de matriz 4x4
+matriz = np.array([
+    [0x00, 0x01, 0x02, 0x03],
+    [0x10, 0x11, 0x12, 0x13],
+    [0x20, 0x21, 0x22, 0x23],
+    [0x30, 0x31, 0x32, 0x33]
+], dtype=np.uint8)
+
+# Exemplo de tabela de substituição
+tabela = {i: (i + 1) % 256 for i in range(256)}
+
+# Substituir os bytes da matriz
+matriz_substituida = substitute_bytes(matriz, tabela)
+print(matriz_substituida)
+```
+##### Observações
+- A tabela de substituição personalizada deve mapear todos os valores de byte (0-255) para evitar erros durante a substituição.
+- É uma operação essencial para introduzir não-linearidade em algoritmos criptográficos, aumentando a resistência a ataques.
+[Voltar ao índice](#índice)
+
+#### shift_rows(matriz, inverso=False)
+A função `shift_rows` realiza a operação **ShiftRows** do AES em uma matriz 4x4, deslocando ciclicamente as linhas da matriz para a esquerda (criptografia) ou para a direita (descriptografia). Essa operação é essencial para misturar os bytes na transformação do estado AES.
+
+##### Argumentos
+- **`matriz`** (`numpy.ndarray`):
+  - Matriz 4x4 (`uint8`) representando os dados do estado no AES.
+- **`inverso`** (`bool`, opcional):
+  - Se `True`, realiza o deslocamento na direção inversa (direita), usado na descriptografia.
+  - Se `False` (padrão), realiza o deslocamento padrão para a esquerda, usado na criptografia.
+
+##### Retorno
+- **`numpy.ndarray`**:
+  - A matriz 4x4 modificada após a operação **ShiftRows**.
+
+##### Funcionamento
+1. **Definição da Direção:**
+   - Define o sentido do deslocamento:
+     - `-1` para deslocamento à esquerda (criptografia).
+     - `1` para deslocamento à direita (descriptografia).
+
+2. **Deslocamento das Linhas:**
+   - A linha 0 permanece inalterada.
+   - As linhas 1, 2 e 3 são deslocadas em 1, 2 e 3 posições, respectivamente, na direção definida.
+
+3. **Modificação da Matriz:**
+   - Usa `np.roll` para realizar o deslocamento circular das linhas.
+
+4. **Retorno da Matriz Modificada:**
+   - Retorna a matriz após a aplicação da operação.
+
+##### Exemplo de Uso
+```python
+import numpy as np
+
+# Exemplo de matriz 4x4
+matriz = np.array([
+    [0x00, 0x01, 0x02, 0x03],
+    [0x10, 0x11, 0x12, 0x13],
+    [0x20, 0x21, 0x22, 0x23],
+    [0x30, 0x31, 0x32, 0x33]
+], dtype=np.uint8)
+
+# Aplicar ShiftRows para criptografia (esquerda)
+matriz_shift = shift_rows(matriz.copy())
+print("Criptografia (esquerda):")
+print(matriz_shift)
+
+# Aplicar ShiftRows inverso para descriptografia (direita)
+matriz_shift_inversa = shift_rows(matriz.copy(), inverso=True)
+print("Descriptografia (direita):")
+print(matriz_shift_inversa)
+```
+##### Observações
+- A linha 0 da matriz permanece inalterada durante a operação.
+- A direção do deslocamento é controlada pelo parâmetro inverso, permitindo o uso do mesmo método para criptografia e descriptografia.
+[Voltar ao índice](#índice)
+
+#### add_round_key(matriz_bloco, chave_rodada)
+A função `add_round_key` implementa a operação **AddRoundKey** do AES, combinando a matriz de estado atual com a chave da rodada por meio de uma operação XOR. Essa etapa é essencial para integrar a chave criptográfica ao processamento do estado.
+
+##### Argumentos
+- **`matriz_bloco`** (`numpy.ndarray`):
+  - Matriz 4x4 (`uint8`) representando o estado atual do bloco de dados.
+- **`chave_rodada`** (`list`):
+  - Lista de 16 bytes (`uint8`) representando a chave da rodada.
+
+##### Retorno
+- **`numpy.ndarray`**:
+  - A matriz 4x4 resultante após a aplicação da operação XOR entre o estado atual e a chave da rodada.
+
+##### Funcionamento
+1. **Conversão da Chave da Rodada:**
+   - Transforma a lista de 16 bytes em uma matriz 4x4 utilizando `numpy`.
+
+2. **Aplicação do XOR:**
+   - Realiza uma operação bit a bit XOR entre os elementos correspondentes da matriz do bloco e a matriz da chave da rodada.
+
+3. **Retorno da Matriz Modificada:**
+   - Retorna a matriz resultante da operação.
+
+##### Exemplo de Uso
+```python
+import numpy as np
+
+# Exemplo de matriz de estado 4x4 (bloco)
+matriz_bloco = np.array([
+    [0x32, 0x88, 0x31, 0xe0],
+    [0x43, 0x5a, 0x31, 0x37],
+    [0xf6, 0x30, 0x98, 0x07],
+    [0xa8, 0x8d, 0xa2, 0x34]
+], dtype=np.uint8)
+
+# Exemplo de chave de rodada
+chave_rodada = [
+    0x2b, 0x7e, 0x15, 0x16,
+    0x28, 0xae, 0xd2, 0xa6,
+    0xab, 0xf7, 0x15, 0x88,
+    0x09, 0xcf, 0x4f, 0x3c
+]
+
+# Aplicar AddRoundKey
+resultado = add_round_key(matriz_bloco, chave_rodada)
+print("Resultado:")
+print(resultado)
+```
+##### Observações
+- **AddRoundKey** é uma operação reversível, pois o XOR aplicado com a mesma chave restaura os dados originais.
+- A matriz da chave deve ser representada exatamente como uma lista de 16 bytes.
+[Voltar ao índice](#índice)
+
+#### expansao_chave(chave_inicial, tabela_substituicao, num_rodadas=10)
+A função `expansao_chave` realiza a expansão de uma chave inicial para gerar as chaves de cada rodada do AES. Esse processo é fundamental para garantir que cada rodada use uma chave única, derivada da chave inicial, utilizando substituições, deslocamentos circulares e operações XOR com constantes de rodada.
+
+##### Argumentos
+- **`chave_inicial`** (`list`):
+  - Lista de 16 bytes (`uint8`) representando a chave inicial.
+- **`tabela_substituicao`** (`dict`):
+  - Tabela de substituição personalizada (equivalente à S-Box).
+- **`num_rodadas`** (`int`, opcional):
+  - Número de rodadas do AES (padrão: 10).
+
+##### Retorno
+- **`list`**:
+  - Lista de chaves expandidas, onde cada chave é uma lista linear de 16 bytes.
+
+##### Funcionamento
+1. **Divisão da Chave Inicial:**
+   - A chave inicial de 16 bytes é dividida em 4 palavras (listas de 4 bytes cada).
+
+2. **Geração de Rcon:**
+   - Calcula as constantes de rodada (`Rcon`), que são usadas no processo de expansão.
+
+3. **Expansão das Palavras:**
+   - Gera novas palavras usando as palavras anteriores:
+     - Substitui e aplica deslocamento circular na palavra a cada múltiplo de 4.
+     - Aplica XOR com a constante de rodada na primeira posição.
+     - Realiza XOR com a palavra 4 posições atrás para formar a nova palavra.
+
+4. **Combinação em Chaves Expandidas:**
+   - Agrupa as palavras em blocos de 4 para formar as chaves de 16 bytes de cada rodada.
+
+5. **Retorno:**
+   - Retorna uma lista contendo todas as chaves expandidas.
+
+##### Exemplo de Uso
+```python
+# Exemplo de chave inicial e tabela de substituição
+chave_inicial = [
+    0x2b, 0x7e, 0x15, 0x16,
+    0x28, 0xae, 0xd2, 0xa6,
+    0xab, 0xf7, 0x15, 0x88,
+    0x09, 0xcf, 0x4f, 0x3c
+]
+tabela_substituicao = {i: (i + 1) % 256 for i in range(256)}  # Exemplo de tabela personalizada
+
+# Geração das chaves expandidas
+chaves_expandidas = expansao_chave(chave_inicial, tabela_substituicao)
+print("Chaves Expandidas:")
+for i, chave in enumerate(chaves_expandidas):
+    print(f"Rodada {i}: {chave}")
+```
+##### Observações
+- A chave inicial deve ter exatamente 16 bytes para garantir compatibilidade com o AES.
+- A tabela de substituição (S-Box) deve mapear todos os valores de byte (0-255) para evitar erros durante a expansão.
+- O número de rodadas pode ser ajustado para diferentes tamanhos de chave (por exemplo, 12 ou 14 rodadas).
+[Voltar ao índice](#índice)
+
+#### criptografar(blocos, chaves, tabela, num_rodadas=10)
+A função `criptografar` aplica o algoritmo AES modificado para criptografar uma lista de blocos de dados. Utilizando chaves expandidas, uma tabela de substituição personalizada (S-Box) e as transformações do AES, ela processa cada bloco em múltiplas rodadas, gerando blocos criptografados.
+
+##### Argumentos
+- **`blocos`** (`list`):
+  - Lista de blocos, onde cada bloco é uma matriz 4x4 (`uint8`) representando o estado inicial.
+- **`chaves`** (`list`):
+  - Lista de chaves expandidas, com cada chave sendo uma lista linear de 16 bytes.
+- **`tabela`** (`dict`):
+  - Tabela de substituição personalizada (S-Box) usada para a substituição de bytes.
+- **`num_rodadas`** (`int`, opcional):
+  - Número de rodadas do AES (padrão: 10).
+
+##### Retorno
+- **`list`**:
+  - Lista de blocos criptografados, com cada bloco sendo uma matriz 4x4 (`uint8`).
+
+##### Funcionamento
+1. **Processamento de Cada Bloco:**
+   - Para cada bloco na lista:
+     - Aplica a etapa inicial com a primeira chave (AddRoundKey).
+
+2. **Rodadas Intermediárias:**
+   - Em cada uma das rodadas intermediárias:
+     - **SubBytes:** Substitui os bytes usando a tabela S-Box.
+     - **ShiftRows:** Realiza deslocamento das linhas.
+     - **MixColumns:** Mistura as colunas para difusão.
+     - **AddRoundKey:** Aplica a chave correspondente à rodada.
+
+3. **Rodada Final:**
+   - Realiza as operações **SubBytes**, **ShiftRows**, e **AddRoundKey**, omitindo **MixColumns**.
+
+4. **Atualização dos Blocos:**
+   - Substitui o bloco original pelo estado criptografado resultante.
+
+5. **Retorno dos Blocos Criptografados:**
+   - Retorna a lista de blocos após a criptografia.
+
+##### Exemplo de Uso
+```python
+import numpy as np
+
+# Exemplo de entrada
+blocos = [
+    np.array([
+        [0x32, 0x88, 0x31, 0xe0],
+        [0x43, 0x5a, 0x31, 0x37],
+        [0xf6, 0x30, 0x98, 0x07],
+        [0xa8, 0x8d, 0xa2, 0x34]
+    ], dtype=np.uint8)
+]
+chaves = expansao_chave(
+    chave_inicial=[
+        0x2b, 0x7e, 0x15, 0x16,
+        0x28, 0xae, 0xd2, 0xa6,
+        0xab, 0xf7, 0x15, 0x88,
+        0x09, 0xcf, 0x4f, 0x3c
+    ],
+    tabela_substituicao={i: (i + 1) % 256 for i in range(256)}
+)
+tabela = {i: (i + 1) % 256 for i in range(256)}
+
+# Criptografia dos blocos
+blocos_criptografados = criptografar(blocos, chaves, tabela)
+print("Blocos Criptografados:")
+for bloco in blocos_criptografados:
+    print(bloco)
+```
+##### Observações
+- Cada bloco deve ser uma matriz 4x4 para compatibilidade com as transformações do AES.
+- As chaves expandidas devem ser pré-geradas e correspondentes ao número de rodadas definido.
+- A tabela de substituição deve mapear todos os valores de byte (0-255).
+[Voltar ao índice](#índice)
+
+#### descriptografar(blocos, chaves, tabela_inversa, num_rodadas=10)
+A função `descriptografar` aplica o algoritmo AES modificado para reverter a criptografia de uma lista de blocos de dados. Utilizando chaves expandidas e uma tabela de substituição inversa (S-Box inversa), ela processa cada bloco em múltiplas rodadas para restaurar os dados originais.
+
+##### Argumentos
+- **`blocos`** (`list`):
+  - Lista de blocos, onde cada bloco é uma matriz 4x4 (`uint8`) representando o estado criptografado.
+- **`chaves`** (`list`):
+  - Lista de chaves expandidas, com cada chave sendo uma lista linear de 16 bytes.
+- **`tabela_inversa`** (`dict`):
+  - Tabela de substituição inversa (S-Box inversa) usada para a substituição de bytes durante a descriptografia.
+- **`num_rodadas`** (`int`, opcional):
+  - Número de rodadas do AES (padrão: 10).
+
+##### Retorno
+- **`list`**:
+  - Lista de blocos descriptografados, com cada bloco sendo uma matriz 4x4 (`uint8`).
+
+##### Funcionamento
+1. **Processamento de Cada Bloco:**
+   - Para cada bloco na lista:
+     - Aplica a última chave (AddRoundKey).
+     - Realiza as operações inversas de **ShiftRows** e **SubBytes**.
+
+2. **Rodadas Intermediárias:**
+   - Em cada rodada intermediária (em ordem inversa):
+     - **AddRoundKey:** Aplica a chave correspondente à rodada.
+     - **MixColumns inverso:** Reverte a difusão.
+     - **ShiftRows inverso:** Realiza deslocamento das linhas para a direita.
+     - **SubBytes inverso:** Substitui os bytes usando a S-Box inversa.
+
+3. **Rodada Final:**
+   - Realiza a última aplicação de **AddRoundKey** com a chave inicial.
+
+4. **Atualização dos Blocos:**
+   - Substitui o bloco original pelo estado descriptografado resultante.
+
+5. **Retorno dos Blocos Descriptografados:**
+   - Retorna a lista de blocos após a descriptografia.
+
+##### Exemplo de Uso
+```python
+import numpy as np
+
+# Exemplo de entrada (blocos criptografados)
+blocos = [
+    np.array([
+        [0x39, 0x02, 0xdc, 0x19],
+        [0x25, 0xdc, 0x11, 0x6a],
+        [0x84, 0x09, 0x85, 0x0b],
+        [0x1d, 0xfb, 0x97, 0x32]
+    ], dtype=np.uint8)
+]
+chaves = expansao_chave(
+    chave_inicial=[
+        0x2b, 0x7e, 0x15, 0x16,
+        0x28, 0xae, 0xd2, 0xa6,
+        0xab, 0xf7, 0x15, 0x88,
+        0x09, 0xcf, 0x4f, 0x3c
+    ],
+    tabela_substituicao={i: (i + 1) % 256 for i in range(256)}
+)
+tabela_inversa = {v: k for k, v in {i: (i + 1) % 256 for i in range(256)}.items()}
+
+# Descriptografia dos blocos
+blocos_descriptografados = descriptografar(blocos, chaves, tabela_inversa)
+print("Blocos Descriptografados:")
+for bloco in blocos_descriptografados:
+    print(bloco)
+```
+##### Observações
+- A ordem inversa das rodadas é fundamental para reverter a criptografia.
+- As chaves expandidas e a S-Box inversa devem ser correspondentes às usadas na criptografia.
+- Cada bloco deve ser uma matriz 4x4 para compatibilidade com as transformações do AES.
+[Voltar ao índice](#índice)
+
+#### descriptografar_texto(conteudo, chaves, tabela_inversa, num_rodadas=10)
+A função `descriptografar_texto` realiza a descriptografia de um texto criptografado representado em formato hexadecimal. Ela converte os dados em blocos de 16 bytes, aplica o algoritmo AES modificado para descriptografia e retorna o texto original legível.
+
+##### Argumentos
+- **`conteudo`** (`str`):
+  - String hexadecimal representando o texto criptografado.
+- **`chaves`** (`list`):
+  - Lista de chaves expandidas, com cada chave sendo uma lista linear de 16 bytes.
+- **`tabela_inversa`** (`dict`):
+  - Tabela de substituição inversa (S-Box inversa) usada para descriptografia.
+- **`num_rodadas`** (`int`, opcional):
+  - Número de rodadas do AES (padrão: 10).
+
+##### Retorno
+- **`str`**:
+  - Texto original descriptografado.
+
+##### Funcionamento
+1. **Conversão de Hexadecimal para Bytes:**
+   - Transforma a string hexadecimal em uma lista de bytes.
+   - Exibe o total de bytes convertidos.
+
+2. **Formação de Blocos:**
+   - Agrupa os bytes em blocos de 16 bytes.
+   - Aplica padding (preenchimento com zeros) no último bloco, caso necessário.
+   - Converte cada bloco em uma matriz 4x4.
+
+3. **Descriptografia dos Blocos:**
+   - Usa a função `descriptografar` para aplicar o algoritmo AES modificado em cada bloco.
+
+4. **Conversão de Blocos para Texto:**
+   - Converte os blocos descriptografados para uma lista linear de bytes.
+   - Decodifica a lista de bytes em texto legível, removendo padding.
+
+5. **Retorno:**
+   - Retorna o texto original descriptografado.
+
+##### Exemplo de Uso
+```python
+# Exemplo de entrada
+conteudo_criptografado = "39dc191125dc116a8409850b1dfb9732"
+chaves = expansao_chave(
+    chave_inicial=[
+        0x2b, 0x7e, 0x15, 0x16,
+        0x28, 0xae, 0xd2, 0xa6,
+        0xab, 0xf7, 0x15, 0x88,
+        0x09, 0xcf, 0x4f, 0x3c
+    ],
+    tabela_substituicao={i: (i + 1) % 256 for i in range(256)}
+)
+tabela_inversa = {v: k for k, v in {i: (i + 1) % 256 for i in range(256)}.items()}
+
+# Descriptografia do texto
+texto_original = descriptografar_texto(conteudo_criptografado, chaves, tabela_inversa)
+print("Texto Original Descriptografado:", texto_original)
+```
+##### Observações
+- O conteúdo criptografado deve estar no formato hexadecimal, sem espaços ou separadores.
+- A tabela inversa (S-Box inversa) e as chaves expandidas devem ser correspondentes às usadas na criptografia.
+- Padding (zeros adicionais) é removido automaticamente ao final do processo.
+[Voltar ao índice](#índice)
 
 --------------------------------------------------
 
