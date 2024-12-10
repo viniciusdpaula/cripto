@@ -296,8 +296,8 @@ Comando:
 python aes_manager.py -d exemplo.txt
 ```
 Saída: `../utils/saidas/texto_descriptografado.txt`
-## Total de bytes convertidos: 32
-## Tempo de descriptografia: 0.005801 segundos
+** Total de bytes convertidos: 32**
+**Tempo de descriptografia: 0.005801 segundos**
 ---
 
 ### **3. Verificação Completa `-v`**
@@ -306,11 +306,11 @@ Comando:
 python aes_manager.py -v exemplo.txt
 ```
 ## Resultado:
-## Tempo de criptografia: 0.005078 segundos
-## Total de bytes convertidos: 32
-## Tempo de descriptografia: 0.018146 segundos    
-## Tempo total de processamento: 0.031357 segundos
-## Processamento concluído
+**Tempo de criptografia: 0.005078 segundos**
+**Total de bytes convertidos: 32**
+**Tempo de descriptografia: 0.018146 segundos**    
+**Tempo total de processamento: 0.031357 segundos**
+**Processamento concluído**
 ---
 
 ### **Estruturas de Saída**
