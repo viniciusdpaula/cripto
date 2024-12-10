@@ -517,7 +517,6 @@ print(tabela_normalizada)
 ---
 
 #### `carregar_configuracoes(self)`
-
 O método `carregar_configuracoes` da classe `GerenciadorAES` é responsável por carregar as configurações de chave e tabela de substituição de um arquivo JSON. Ele garante que os dados necessários para o funcionamento do AES estejam disponíveis, gerando valores padrão caso o arquivo esteja ausente ou corrompido.
 
 ##### Funcionamento
@@ -544,7 +543,7 @@ O método `carregar_configuracoes` da classe `GerenciadorAES` é responsável po
    - Expande a chave criptográfica com o método `expansao_chave`.
 
 ##### Exemplo de Uso
-```
+```python
 gerenciador = GerenciadorAES()
 gerenciador.carregar_configuracoes()
 # As configurações agora estão carregadas e prontas para uso.
