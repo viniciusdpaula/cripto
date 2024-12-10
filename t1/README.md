@@ -36,7 +36,7 @@ A nova tabela é gerada como uma permutação aleatória dos valores de 0 a 255.
 
 A tabela inversa, usada na **descriptografia**, também é gerada automaticamente, sendo o mapeamento inverso da tabela de substituição.
 
-#### **Código para Gerar a Tabela**
+#### **Código de Geraração das Tabelas**
 **gerar_tabela_substituicao():**
 ```python
 def gerar_tabela_substituicao():
