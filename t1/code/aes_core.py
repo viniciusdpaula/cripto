@@ -136,17 +136,7 @@ def descriptografar(blocos, chaves, tabela_inversa, num_rodadas=10):
     return blocos
 
 ##Lê um arquivo com texto criptografado, converte em blocos e os descriptografa.
-def descriptografar_arquivo(nome_arquivo, chaves, tabela_inversa, num_rodadas=10):
-    try:
-        # Ler o conteúdo hexadecimal do arquivo
-        with open(nome_arquivo, "r") as f:
-            conteudo = f.read().strip()  # Remove espaços extras e quebras de linha
-    except FileNotFoundError:
-        print(f"Erro: O arquivo '{nome_arquivo}' não foi encontrado.")
-        return ""
-    except IOError as e:
-        print(f"Erro ao abrir o arquivo '{nome_arquivo}': {e}")
-        return ""
+def descriptografar_texto(conteudo, chaves, tabela_inversa, num_rodadas=10):
 
     # Converter o conteúdo hexadecimal em uma lista de bytes
     bytes_conteudo = [int(conteudo[i:i+2], 16) for i in range(0, len(conteudo), 2)]

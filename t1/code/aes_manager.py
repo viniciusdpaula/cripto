@@ -6,7 +6,7 @@ import sys
 from typing import List, Dict, Any
 from aes_core import (
     criptografar, 
-    descriptografar_arquivo, 
+    descriptografar_texto, 
     expansao_chave, 
     texto_para_blocos, 
     blocos_para_texto, 
@@ -14,9 +14,14 @@ from aes_core import (
     gerar_tabela_inversa
 )
 
-class AES:
-    def __init__(self, arquivo_dados="../utils/key.json"):
+class GerenciadorAES:
+    def __init__(self, arquivo_dados=None):
+        # Define o caminho absoluto para o arquivo key.json
+        if arquivo_dados is None:
+            script_dir = os.path.dirname(os.path.abspath(__file__))  # Diretório do script
+            arquivo_dados = os.path.join(script_dir, "../utils/key.json")
         self.arquivo_dados = arquivo_dados
+
         self.carregar_configuracoes()
 
     def _normalizar_tabela(self, tabela: Dict[Any, Any]) -> Dict[int, int]:
@@ -72,7 +77,7 @@ class AES:
         self.tabela_inversa = gerar_tabela_inversa(self.tabela)
         self.chaves = expansao_chave(self.chave, self.tabela)
 
-    def criptografar_arquivo(self, arquivo_entrada, arquivo_saida="../utils/saidas/texto_criptografado.txt"):
+    def criptografar_arquivo(self, arquivo_entrada):
         try:
             with open(arquivo_entrada, "r", encoding="utf-8") as f:
                 texto = f.read()
@@ -83,44 +88,44 @@ class AES:
             print(f"Erro ao ler o arquivo: {e}")
             return None
 
-        # Criar diretório de saída se não existir
-        os.makedirs(os.path.dirname(arquivo_saida), exist_ok=True)
-
         inicio = time.time()
         blocos = texto_para_blocos(texto)
         blocos_criptografados = criptografar(blocos, self.chaves, self.tabela)
-        
+        resultado_hex = ""  # Variável para armazenar o resultado
         try:
-            with open(arquivo_saida, "w") as f:
-                for bloco in blocos_criptografados:
-                    for linha in bloco:
-                        f.write(''.join(f"{byte:02x}" for byte in linha))
-            
+            for bloco in blocos_criptografados:
+                for linha in bloco:
+                    resultado_hex += ''.join(f"{byte:02x}" for byte in linha)
+            print(f"{resultado_hex}")
             tempo = time.time() - inicio
-            print(f"Tempo de criptografia: {tempo:.6f} segundos")
-            return arquivo_saida
+            # print(f"\nTempo de criptografia: {tempo:.6f} segundos\n")
+            return resultado_hex
         except Exception as e:
             print(f"Erro ao salvar arquivo criptografado: {e}")
             return None
 
-    def descriptografar_arquivo(self, arquivo_entrada, arquivo_saida="../utils/saidas/texto_descriptografado.txt"):
-        # Criar diretório de saída se não existir
-        os.makedirs(os.path.dirname(arquivo_saida), exist_ok=True)
+    def descriptografar_arquivo(self, arquivo_entrada='', texto=None):
 
         inicio = time.time()
-        texto_descriptografado = descriptografar_arquivo(arquivo_entrada, self.chaves, self.tabela_inversa)
+        if texto == None:
+            try:
+                # Ler o conteúdo hexadecimal do arquivo
+                with open(arquivo_entrada, "r") as f:
+                    texto = f.read().strip()  # Remove espaços extras e quebras de linha
+                    print(texto)
+            except FileNotFoundError:
+                print(f"Erro: O arquivo '{arquivo_entrada}' não foi encontrado.")
+                return ""
+            except IOError as e:
+                print(f"Erro ao abrir o arquivo '{arquivo_entrada}': {e}")
+                return ""         
+        texto_descriptografado = descriptografar_texto(texto, self.chaves, self.tabela_inversa)
         
         if texto_descriptografado:
-            try:
-                with open(arquivo_saida, "w", encoding="utf-8") as f:
-                    f.write(texto_descriptografado)
-                
-                tempo = time.time() - inicio
-                print(f"Tempo de descriptografia: {tempo:.6f} segundos")
-                return arquivo_saida
-            except Exception as e:
-                print(f"Erro ao salvar arquivo descriptografado: {e}")
-                return None
+            tempo = time.time() - inicio
+            print(f"Tempo de descriptografia: {tempo:.6f} segundos")
+            print(f"Mensagem decifrada: {texto_descriptografado}")
+            return texto_descriptografado
         
         print("Erro ao descriptografar o arquivo.")
         return None
@@ -130,21 +135,18 @@ class AES:
         inicio = time.time()
         
         # Criptografar
-        arquivo_criptografado = self.criptografar_arquivo(arquivo_original)
-        if not arquivo_criptografado:
+        resultado_hex = self.criptografar_arquivo(arquivo_original)
+        if not resultado_hex:
             return False
         
         # Descriptografar
-        arquivo_descriptografado = self.descriptografar_arquivo(arquivo_criptografado)
-        if not arquivo_descriptografado:
+        texto_descriptografado = self.descriptografar_arquivo(texto=resultado_hex)
+        if not texto_descriptografado:
             return False
-        
         # Comparar conteúdo dos arquivos
         try:
-            with open(arquivo_original, "r", encoding="utf-8") as f_original, \
-                 open(arquivo_descriptografado, "r", encoding="utf-8") as f_descriptografado:
+            with open(arquivo_original, "r", encoding="utf-8") as f_original:
                 texto_original = f_original.read()
-                texto_descriptografado = f_descriptografado.read()
         except Exception as e:
             print(f"Erro ao comparar arquivos: {e}")
             return False
@@ -162,14 +164,14 @@ def main():
         print("Uso: python main.py <-c|-d|-p> <caminho do arquivo>")
         sys.exit(1)
 
-    processador = AES()
+    processador = GerenciadorAES()
     modo = sys.argv[1]
     arquivo = sys.argv[2]
 
     if modo == "-c":
         processador.criptografar_arquivo(arquivo)
     elif modo == "-d":
-        processador.descriptografar_arquivo(arquivo)
+        processador.descriptografar_arquivo(arquivo_entrada=arquivo)
     elif modo == "-v":
         processador.processar_arquivo(arquivo)
     else:
