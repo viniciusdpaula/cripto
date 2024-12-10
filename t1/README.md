@@ -281,36 +281,43 @@ O custo do AES é **linearmente proporcional ao número de blocos** de 16 bytes 
 
 ## **Exemplo de Execução**
 
-### **1. Criptografia `-c`**
-Comando:
+### **1. Criptografia `-c`**  
+Comando:  
 ```bash
 python aes_manager.py -c exemplo.txt
-```
-Saída: `../utils/saidas/texto_criptografado.txt`
-## Tempo de criptografia: 0.007567 segundos
+```  
+Saída:  
+`../utils/saidas/texto_criptografado.txt`  
+
+**Tempo de criptografia:** 0.007567 segundos  
+
 ---
 
-### **2. Descriptografia `-d`**
-Comando:
+### **2. Descriptografia `-d`**  
+Comando:  
 ```bash
 python aes_manager.py -d exemplo.txt
-```
-Saída: `../utils/saidas/texto_descriptografado.txt`
-** Total de bytes convertidos: 32**
-**Tempo de descriptografia: 0.005801 segundos**
+```  
+Saída:  
+`../utils/saidas/texto_descriptografado.txt`  
+
+**Total de bytes convertidos:** 32  
+**Tempo de descriptografia:** 0.005801 segundos  
+
 ---
 
-### **3. Verificação Completa `-v`**
-Comando:
+### **3. Verificação Completa `-v`**  
+Comando:  
 ```bash
 python aes_manager.py -v exemplo.txt
-```
-## Resultado:
-**Tempo de criptografia: 0.005078 segundos**
-**Total de bytes convertidos: 32**
-**Tempo de descriptografia: 0.018146 segundos**    
-**Tempo total de processamento: 0.031357 segundos**
-**Processamento concluído**
+```  
+Resultado:  
+**Tempo de criptografia:** 0.005078 segundos  
+**Total de bytes convertidos:** 32  
+**Tempo de descriptografia:** 0.018146 segundos  
+**Tempo total de processamento:** 0.031357 segundos  
+**Processamento concluído**  
+
 ---
 
 ### **Estruturas de Saída**
