@@ -272,11 +272,10 @@ O custo do AES é **linearmente proporcional ao número de blocos** de 16 bytes 
 ---
 
 ## **Considerações**
-1. **MixColumns** é a operação mais cara devido às multiplicações no campo de Galois.
-2. A última rodada elimina **MixColumns**, reduzindo o custo.
-3. A expansão de chave é linear e ocorre apenas uma vez.
-4. O uso de tabelas de substituição acelera operações de substituição de bytes.
-6. O custo computacional é linear em relação ao tamanho do texto de entrada.
+1. A última rodada elimina **MixColumns**, reduzindo o custo.
+2. A expansão de chave é linear e ocorre apenas uma vez.
+3. O uso de tabelas de substituição acelera operações de substituição de bytes.
+4. O custo computacional é linear em relação ao tamanho do texto de entrada.
 
 ---
 
