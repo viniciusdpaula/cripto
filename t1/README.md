@@ -4,7 +4,7 @@
 Este projeto implementa uma versão personalizada do AES, substituindo a S-Box padrão por uma tabela de substituição baseada em uma **cifra monoalfabética personalizada**. O objetivo é analisar o impacto dessa modificação no desempenho, avaliando o tempo total e o custo computacional de cada fase do algoritmo para arquivos de tamanhos variados. Além disso, os resultados serão comparados com uma implementação do AES na biblioteca OpenSSL, permitindo uma análise detalhada de eficiência e viabilidade.
 Ele permite a **criptografia**, **descriptografia**, e **validação de desempenho** comparada à implementação do AES utilizando OpenSSL.
 
----------------------------------------------------
+---
 
 ## Índice
 
@@ -41,7 +41,7 @@ Ele permite a **criptografia**, **descriptografia**, e **validação de desempen
 6. [Requisitos](#requisitos)
 
 
---------------------------------------------------
+---
 
 ### Substituição da Caixa-S por Outra Tabela de Substituição (Cifra Monoalfabética)
 Nesta implementação, a S-BOX original foi substituída por uma **tabela de substituição gerada aleatoriamente**. Essa nova tabela utiliza o conceito de **Cifra Monoalfabética**, onde cada byte (0-255) é substituído por outro byte único.
@@ -142,161 +142,157 @@ Ao iniciar o programa, a tabela de substituição é carregada a partir do arqui
 2. Na descriptografia, a tabela inversa é usada para reverter a substituição.
 [Voltar ao índice](#índice)
 
---------------------------------------------------
+---
 
 ### Análise de Custo Computacional do Algoritmo AES Modificado
 
-1. **SubBytes**: Substitui cada byte da matriz de estado pela tabela de substituição (S-Box).
-2. **ShiftRows**: Desloca as linhas da matriz de estado.
-3. **MixColumns**: Realiza uma operação linear nas colunas da matriz de estado.
-4. **AddRoundKey**: Aplica uma operação XOR entre a matriz de estado e a chave da rodada.
+1. **[SubBytes](#substitute_bytesmatriz-tabela):** Substitui cada byte da matriz de estado pela tabela de substituição (S-Box).
+2. **[ShiftRows](#shift_rowsmatriz-inversofalse):** Desloca as linhas da matriz de estado.
+3. **[MixColumns](#mix_columnsmatriz-inversofalse)**: Realiza uma operação linear nas colunas da matriz de estado.
+4. **[AddRoundKey](#add_round_keymatriz_bloco-chave_rodada)**: Aplica uma operação XOR entre a matriz de estado e a chave da rodada.
 
-##### 1. SubBytes (Substituição de Bytes)
+##### 1. [SubBytes](#substitute_bytesmatriz-tabela) (Substituição de Bytes)
 - **Descrição:**  
   Cada byte da matriz de estado (totalizando 16 bytes) é substituído por um valor correspondente na tabela de substituição **S-Box**.
 - **Custo Computacional:**
   - A tabela de substituição é uma operação de **busca constante (O(1))** para cada byte.
   - Total de 16 bytes no estado, portanto 16 buscas são realizadas.
-  - **Custo:** \( O(16) \).
+  - **Custo:** $O(16)$.
 
-##### 2. ShiftRows (Deslocamento de Linhas)
+##### 2. [ShiftRows](#shift_rowsmatriz-inversofalse) (Deslocamento de Linhas)
 - **Custo Computacional:**
   - Total de **3 linhas deslocadas** (linha 0 não é deslocada).
-  - **Custo:** \( O(12) \) (pois 3 linhas são deslocadas e cada deslocamento afeta 4 elementos).
+  - **Custo:** $O(12)$ (pois 3 linhas são deslocadas e cada deslocamento afeta 4 elementos).
 
-##### 3. MixColumns (Mistura de Colunas)
+##### 3. [MixColumns](#mix_columnsmatriz-inversofalse) (Mistura de Colunas)
 - **Custo Computacional:**
-  - Como há 4 colunas, o custo total para **MixColumns** é:
-    - \( 4 \text{ colunas} \times (4 \text{ multiplicações} + 3 \text{ XORs}) = 16 \text{ multiplicações} + 12 \text{ XORs} \).
-  - **Custo:** \( O(16) \).
+  - Como há 4 colunas, o custo total para **[MixColumns](#mix_columnsmatriz-inversofalse)** é:
+  $$
+  4 \text{colunas} \times (4 \text{multiplicações} + 3 \text{XORs}) = 16 \text{multiplicações} + 12 \text{XORs}
+  $$    
+  - **Custo:** $O(16)$.
 
-##### 4. AddRoundKey (Adição da Chave de Rodada)
+##### 4. [AddRoundKey](#add_round_keymatriz_bloco-chave_rodada) (Adição da Chave de Rodada)
 - **Custo Computacional:**
-  - Cada operação XOR entre dois bytes tem custo \( O(1) \).
+  - Cada operação XOR entre dois bytes tem custo $O(1)$.
   - Como são feitas 16 operações XOR, o custo é:
-  - **Custo:** \( O(16) \).
+  - **Custo:** $O(16)$.
 
 ##### 5. Expansão de Chave
 - **Custo Computacional:**
   - Cada chave de rodada envolve a aplicação de **substituição** e **XOR**.
   - A chave inicial de 16 bytes é expandida em 44 palavras de 4 bytes, gerando as chaves de rodada.
-  - **Custo total:** \( O(40) \), considerando 10 rodadas de expansão e as substituições e XORs necessárias.
+  - **Custo total:** $O(40)$, considerando 10 rodadas de expansão e as substituições e $XORs$ necessárias.
 
 #### **Análise de Custo por Rodada**
 ##### **Custo por Rodada de Criptografia**
-Cada rodada de criptografia realiza as operações **SubBytes**, **ShiftRows**, **MixColumns**, e **AddRoundKey**:
+Cada rodada de criptografia realiza as operações **[SubBytes](#substitute_bytesmatriz-tabela)**, **[ShiftRows](#shift_rowsmatriz-inversofalse)**, **[MixColumns](#mix_columnsmatriz-inversofalse)**, e **[AddRoundKey](#add_round_keymatriz_bloco-chave_rodada)**:
 
 | Fase            | Custo por Operação | Operações por Rodada | Custo Total |
 |------------------|--------------------|-----------------------|-------------|
-| **SubBytes**     | \( O(1) \)         | 16                    | \( O(16) \) |
-| **ShiftRows**    | \( O(1) \)         | 12                    | \( O(12) \) |
-| **MixColumns**   | \( O(1) \)         | 16                    | \( O(16) \) |
-| **AddRoundKey**  | \( O(1) \)         | 16                    | \( O(16) \) |
-| **Total por Rodada** |                  |                       | **\( O(60) \)** |
+| **[SubBytes](#substitute_bytesmatriz-tabela)**     | $O(1)$         | 16                    | $O(16)$ |
+| **[ShiftRows](#shift_rowsmatriz-inversofalse)**    | $O(1)$         | 12                    | $O(12)$ |
+| **[MixColumns](#mix_columnsmatriz-inversofalse)**   | $O(1)$         | 16                    | $O(16)$ |
+| **[AddRoundKey](#add_round_keymatriz_bloco-chave_rodada)**  | $O(1)$         | 16                    | $O(16)$ |
+| **Total por Rodada** |                  |                       | $O(60)$ |
 
-##### Última Rodada (Sem MixColumns)
-**MixColumns** não é executado:
-
+##### Última Rodada (Sem execução do MixColumns)
 | Fase            | Custo por Operação | Operações por Rodada | Custo Total |
 |------------------|--------------------|-----------------------|-------------|
-| **SubBytes**     | \( O(1) \)         | 16                    | \( O(16) \) |
-| **ShiftRows**    | \( O(1) \)         | 12                    | \( O(12) \) |
-| **AddRoundKey**  | \( O(1) \)         | 16                    | \( O(16) \) |
-| **Total (Última Rodada)** |               |                       | **\( O(44) \)** |
+| **[SubBytes](#substitute_bytesmatriz-tabela)**     | $O(1)$         | 16                    | $O(16$) |
+| **[ShiftRows](#shift_rowsmatriz-inversofalse)**    | $O(1)$         | 12                    | $O(12$) |
+| **[AddRoundKey](#add_round_keymatriz_bloco-chave_rodada)**  | $O(1)$         | 16                    | $O(16$) |
+| **Total (Última Rodada)** |               |                       | $O(44)$ |
 
 #### **Custo Total do Algoritmo**
-
 Considerando **10 rodadas** de AES:
-
 - **9 Rodadas Completas** (com **MixColumns**):  
-  \( 9 \times O(60) = O(540) \).
-
+  $9 \times O(60) = O(540)$.
 - **Última Rodada** (sem **MixColumns**):  
-  \( O(44) \).
-
+  $O(44)$.
 - **Expansão de Chave**:  
-  \( O(40) \) para gerar as chaves de rodada.
-
+  $O(40)$ para gerar as chaves de rodada.
 - **Custo Total para Criptografia/Descriptografia:**  
-  \( O(540 + 44 + 40) = O(624) \).
+  $O(540 + 44 + 40) = O(624)$.
 
 #### **Custo do Texto de Entrada**
 O custo do AES é **linearmente proporcional ao número de blocos** de 16 bytes no texto de entrada:
-
 1. **Texto de 32 bytes (2 blocos):**  
-   \( O(2 \times 624) = O(1248) \).
+   $O(2 \times 624) = O(1248)$.
 
 2. **Texto de 160 bytes (10 blocos):**  
-   \( O(10 \times 624) = O(6240) \).
+   $O(10 \times 624) = O(6240)$.
 
 3. **Texto de 1024 bytes (64 blocos):**  
-   \( O(64 \times 624) = O(39936) \).
+   $O(64 \times 624) = O(39936)$.
 
 ##### **Considerações**
-1. A última rodada elimina **MixColumns**, reduzindo o custo.
+1. A última rodada elimina **[MixColumns](#mix_columnsmatriz-inversofalse)**, reduzindo o custo.
 2. A expansão de chave é linear e ocorre apenas uma vez.
 3. O uso de tabelas de substituição acelera operações de substituição de bytes.
 4. O custo computacional é linear em relação ao tamanho do texto de entrada.
 [Voltar ao índice](#índice)
 
---------------------------------------------------
+---
 
 ### Arquivo aes_manager.py
 #### main
-O arquivo aes_manager.py gerencia o fluxo principal de operações do AES personalizado, incluindo criptografia, descriptografia e verificação de consistência. Ele também implementa o carregamento de tabelas de substituição e chaves, além de permitir medições de desempenho e comparações. O script pode ser executado diretamente para realizar tarefas específicas com base em argumentos fornecidos.
+O arquivo `aes_manager.py` gerencia o fluxo principal de operações do AES modificado, incluindo criptografia, descriptografia e verificação de consistência. Ele também implementa o carregamento de tabelas de substituição e chaves, além de permitir medições de desempenho e comparações. O script pode ser executado diretamente para realizar tarefas específicas com base em argumentos fornecidos.
 [Ler mais](#aes_managerpy)
 
 #### GerenciadorAES
-O `GerenciadorAES` é uma classe que encapsula as principais funcionalidades do algoritmo AES modificado. Ele gerencia operações de criptografia e descriptografia de arquivos, incluindo o carregamento e normalização de tabelas de substituição, geração de chaves, e execução de fluxos de processamento completos com medições de desempenho. É o núcleo do sistema AES implementado.
+O `GerenciadorAES` é uma **<u>classe</u>**** que encapsula as principais funcionalidades do algoritmo AES modificado. Ele gerencia operações de criptografia e descriptografia de arquivos, incluindo o carregamento e normalização de tabelas de substituição, geração de chaves, e execução de fluxos de processamento completos com medições de desempenho. É o **<u>núcleo</u>** do sistema AES implementado.
 [Ler mais](#gerenciadoraes-1)
+
+---
 
 ### Arquivo aes_core.py
 #### galois_multiply
-A função galois_multiply implementa multiplicação no campo finito GF(2⁸) utilizando redução polinomial. É comumente usada em algoritmos de criptografia como o AES para garantir operações matemáticas seguras e consistentes.
+A função `galois_multiply()` implementa multiplicação no campo finito **GF(2⁸)** utilizando redução polinomial. É comumente usada em algoritmos de criptografia como o AES para garantir operações matemáticas seguras e consistentes.
 [Ler mais](#galois_multiplya-b)
 
 #### gerar_tabela_substituicao
-A função gerar_tabela_substituicao cria um dicionário que embaralha de forma aleatória os valores entre 0 e 255, garantindo unicidade. É um componente essencial em nosso sistemas criptográfico para criar operações de substituição seguras e imprevisíveis.
+A função `gerar_tabela_substituicao()` cria um **dicionário** que embaralha de forma aleatória os valores entre 0 e 255, garantindo unicidade. É um componente essencial em nosso sistema criptográfico para criar operações de substituição seguras e imprevisíveis.
 [Ler mais](#gerar_tabela_substituicao-1)
 
 #### gerar_tabela_inversa
-A função gerar_tabela_inversa cria uma tabela que reverte os mapeamentos de uma tabela de substituição, trocando chaves e valores. É um componente fundamental para a etapa de descriptografia em nosso sistema que utiliza substituições criptográficas.
+A função `gerar_tabela_inversa()` cria uma **tabela** que reverte os mapeamentos de uma [tabela de substituição](#gerar_tabela_substituicao), trocando chaves e valores. É um componente fundamental para a etapa de descriptografia em nosso sistema que utiliza substituições criptográficas.
 [Ler mais](#gerar_tabela_inversatabela_substituicao)
 
 #### texto_para_blocos
-A função texto_para_blocos prepara textos para criptografia no modo AES, dividindo-os em blocos de tamanho fixo de 16 bytes com padding. Os blocos são retornados como matrizes 4x4, facilitando sua manipulação no algoritmo.
+A função `texto_para_blocos()` prepara textos para criptografia no modo AES, dividindo-os em **blocos** de **tamanho fixo de 16 bytes com padding**. Os blocos são retornados como **<u>matrizes</u>** 4x4, facilitando sua manipulação no algoritmo.
 [Ler mais](#texto_para_blocostexto)
 
 #### blocos_para_texto
-A função blocos_para_texto converte blocos processados de dados (em formato de matrizes 4x4) de volta para uma string de texto legível, facilitando a recuperação de dados criptografados ou descriptografados.
+A função `blocos_para_texto()` converte **blocos processados** de dados (em formato de matrizes 4x4) de volta para uma **string de texto legível**, facilitando a recuperação de dados criptografados ou descriptografados.
 [Ler mais](#blocos_para_textoblocos)
 
 #### blocos_para_lista_bytes
-A função blocos_para_lista_bytes converte blocos estruturados (matrizes 4x4) em uma lista linear de bytes. Ela é ideal para operações que exigem uma representação sequencial de dados, como escrita ou análise direta.
+A função `blocos_para_lista_bytes()` converte **blocos estruturados** (matrizes 4x4) em uma **lista linear de bytes**. Ela é ideal para operações que exigem uma representação sequencial de dados, como escrita ou análise direta.
 [Ler mais](#blocos_para_lista_bytesblocos)
 
 #### bytes_para_texto
-A função bytes_para_texto decodifica listas de bytes em strings legíveis usando UTF-8, removendo padding adicional. Ela é uma etapa crucial para recuperar textos originais após processos de criptografia ou manipulação de dados.
+A função `bytes_para_texto()` **decodifica listas de bytes em strings legíveis usando UTF-8**, removendo padding adicional. Ela é uma etapa **<u>crucial</u>** para recuperar textos originais após processos de criptografia ou manipulação de dados.
 [Ler mais](#bytes_para_textolista_bytes)
 
 #### mix_columns
-A função mix_columns implementa a operação de mistura de colunas do AES, aplicando transformações lineares no campo Galois. É usada tanto na criptografia quanto na descriptografia, sendo essencial para a difusão de dados no algoritmo.
+A função `mix_columns()` implementa a **operação de mistura de colunas do AES**, aplicando transformações lineares no campo de Galois. É usada tanto na criptografia quanto na descriptografia, sendo essencial para a difusão de dados no algoritmo.
 [Ler mais](#mix_columnsmatriz-inversofalse)
 
 #### substitute_bytes
-A função substitute_bytes substitui bytes de uma matriz 4x4 utilizando uma tabela de substituição personalizada. Ela é equivalente à etapa SubBytes do AES, mas permite flexibilidade no uso de tabelas customizadas, sendo crucial para operações criptográficas.
+A função `substitute_bytes()` **substitui bytes de uma matriz 4x4 utilizando uma tabela de substituição personalizada**. Ela é equivalente à etapa [SubBytes](#substitute_bytesmatriz-tabela) do AES, mas permite flexibilidade no uso de tabelas customizadas, sendo crucial para operações criptográficas.
 [Ler mais](#substitute_bytesmatriz-tabela)
 
 #### shift_rows
-A função shift_rows implementa a etapa de deslocamento de linhas do AES, misturando os bytes da matriz. Ela desloca linhas para a esquerda ou para a direita, dependendo do modo de operação, sendo fundamental para difundir os dados no estado do AES.
+A função `shift_rows()` implementa a etapa de **deslocamento de linhas do AES**, misturando os bytes da matriz. Ela desloca linhas para a esquerda ou para a direita, dependendo do modo de operação, sendo fundamental para difundir os dados no estado do AES modificado.
 [Ler mais](#shift_rowsmatriz-inversofalse)
 
 #### add_round_key
-A função add_round_key combina a matriz de estado atual com a chave da rodada utilizando a operação XOR. Essa etapa garante a integração direta da chave criptográfica ao processo de transformação do AES modificado, sendo fundamental para a segurança do algoritmo.
+A função `add_round_key()` **combina a matriz de estado atual com a chave da rodada** utilizando a operação $XOR$. Essa etapa garante a integração direta da chave criptográfica ao processo de transformação do AES modificado, sendo fundamental para a segurança do algoritmo.
 [Ler mais](#add_round_keymatriz_bloco-chave_rodada)
 
 #### expansao_chave
-A função expansao_chave gera uma sequência de chaves únicas para cada rodada do AES modificado, garantindo segurança por meio de substituições, deslocamentos e operações XOR. É essencial para o funcionamento do algoritmo, fornecendo chaves específicas para cada etapa de criptografia ou descriptografia.
+A função `expansao_chave()` gera uma **sequência de chaves únicas** para **cada rodada** do AES modificado, garantindo segurança por meio de substituições, deslocamentos e operações $XOR$. É essencial para o funcionamento do algoritmo, fornecendo chaves específicas para cada etapa de criptografia ou descriptografia.
 [Ler mais](#expansao_chavechave_inicial-tabela_substituicao-num_rodadas10)
 
 #### criptografar
@@ -308,20 +304,22 @@ A função descriptografar aplica o algoritmo AES para reverter blocos criptogra
 [Ler mais](#descriptografarblocos-chaves-tabela_inversa-num_rodadas10)
 
 #### descriptografar_texto
-A função descriptografar_texto converte texto criptografado em hexadecimal para blocos, aplica o algoritmo AES para descriptografia, e retorna o texto original. É uma implementação eficiente para restaurar dados em formato legível após processos de criptografia.
+A função `descriptografar_texto()` converte **texto criptografado em hexadecimal para blocos**, aplica o algoritmo AES para descriptografia, e **<u>retorna o texto original</u>**. É uma implementação eficiente para restaurar dados em formato legível após processos de criptografia.
 [Ler mais](#descriptografar_textoconteudo-chaves-tabela_inversa-num_rodadas10)
+
+---
 
 ### Arquivo aes_openssl.py
 #### main
-A função `main` gerencia a criptografia e descriptografia de um arquivo utilizando AES-256-CBC. Ela verifica a integridade dos dados processados e mede o tempo total das operações, garantindo segurança e consistência no processamento de arquivos.
+A função `main()` gerencia a **criptografia** e **descriptografia** de um arquivo utilizando **AES-256-CBC**. Ela verifica a integridade dos dados processados e **mede o tempo total das operações**, garantindo segurança e consistência no processamento de arquivos.
 [Ler mais](#main-3)
 
 #### processar_arquivo
-A função processar_arquivo usa OpenSSL para criptografar ou descriptografar arquivos com AES-256-CBC. Ela aceita chaves e IVs em formato hexadecimal e calcula o tempo gasto na operação, retornando-o para análise. Em caso de erro, retorna `-1`. Ideal para automação de segurança de dados em arquivos
+A função `processar_arquivo()` usa **<u>OpenSSL</u>** para criptografar ou descriptografar arquivos com AES-256-CBC. Ela **aceita chaves e IVs em formato hexadecimal e calcula o tempo gasto na operação**, retornando-o para análise. Em caso de erro, retorna `-1`. Ideal para automação de segurança de dados em arquivos
 [Ler mais](#processar_arquivoinput_file-output_file-chave-iv-operacao)
 
----------------------------------------------------
-
+---
+---
 
 ### aes_manager.py
 #### main()
@@ -360,15 +358,21 @@ A função `main` é o ponto de entrada do programa, projetada para realizar ope
 
 ##### Exemplo de Uso
 1. **Criptografar um arquivo:**
-`python code/aes_manager.py -c utils/textos/texto.txt`
+```bash
+python code/aes_manager.py -c utils/textos/texto.txt
+```
 - **Entrada:** Arquivo com Texto em linguagem normal
 - **Saída:** 
-`bafd26f5322a42c8668ac41cc73551868182b7d829d282eaca4c2aced2102485df72a4a52c5fed1bf9eb86bd31a4d50f759a9a5380e94d626802590aaf4f0858`
+```bash
+bafd26f5322a42c8668ac41cc73551868182b7d829d282eaca4c2aced2102485df72a4a52c5fed1bf9eb86bd31a4d50f759a9a5380e94d626802590aaf4f0858
+```
 2. **Descriptografar um arquivo criptografado:**
-`python code/aes_manager.py -d texto_criptografado.txt`
+```bash
+python code/aes_manager.py -d texto_criptografado.txt
+```
 - **Entrada:** Arquivo com texto criptografado
 - **Saída:** 
-```
+```bash
 Total de bytes convertidos: 64
 Tempo de descriptografia: 0.005436 segundos
 Mensagem decifrada: ola isso e um teste
@@ -376,10 +380,12 @@ ola isso e um teste
 ola isso e um teste
 ```
 3. **Processamento completo:**
-`python code/aes_manager.py -p utils/textos/texto.txt`
+```bash
+python code/aes_manager.py -p utils/textos/texto.txt
+```
 - **Entrada:** Arquivo com Texto em linguagem normal
 - **Saída:** 
-```
+```bash
 bafd26f5322a42c8668ac41cc73551868182b7d829d282eaca4c2aced2102485df72a4a52c5fed1bf9eb86bd31a4d50f759a9a5380e94d626802590aaf4f0858
 Tempo de criptografia: 0.005305 segundos
 Total de bytes convertidos: 64
@@ -390,8 +396,8 @@ ola isso e um teste
 Tempo total de processamento: 0.010777 segundos
 ```
 ##### Mensagem de Ajuda
-Se o programa for executado sem argumentos ou com argumentos inválidos, a seguinte mensagem será exibida:
-```
+Se o programa for executado **sem argumentos** ou com **argumentos inválidos**, a seguinte mensagem será exibida:
+```bash
 Uso: python main.py <-c|-d|-p> <caminho do arquivo>
       Onde: 
         '-c': Criptografar um arquivo
@@ -400,27 +406,30 @@ Uso: python main.py <-c|-d|-p> <caminho do arquivo>
 ```
 [Voltar ao índice](#índice)
 
+---
+
 #### GerenciadorAES
 ##### Métodos Principais
-- **`__init__(arquivo_dados=None)`**:
+- **[`__init__(arquivo_dados=None)`](#_initself-arquivo_dadosnone_)**:
   - Inicializa o gerenciador configurando o caminho do arquivo JSON para armazenar as configurações. Caso o arquivo não exista ou esteja corrompido, cria padrões e salva.
 
-- **`_normalizar_tabela(tabela)`**:
+- **[`_normalizar_tabela(tabela)`](#_normalizar_tabelaself-tabela-dictany-any---dictint-int)**:
   - Normaliza a tabela de substituição, garantindo que todas as entradas sejam inteiras no intervalo de 0 a 255.
 
-- **`carregar_configuracoes()`**:
+- **[`carregar_configuracoes()`](#carregar_configuracoesself)**:
   - Carrega ou cria configurações para tabelas de substituição e chaves. Também gera tabelas auxiliares e expande as chaves necessárias para o AES.
 
-- **`criptografar_arquivo(arquivo_entrada, option)`**:
+- **[`criptografar_arquivo(arquivo_entrada, option)`](#criptografar_arquivoself-arquivo_entrada-option)**:
   - Criptografa o conteúdo de um arquivo de texto, retornando o resultado em hexadecimal e exibindo o tempo gasto no processo.
 
-- **`descriptografar_arquivo(arquivo_entrada='', texto=None)`**:
+- **[`descriptografar_arquivo(arquivo_entrada='', texto=None)`](#descriptografar_arquivoself-arquivo_entrada-textonone)**:
   - Descriptografa o conteúdo de um arquivo ou string hexadecimal e retorna o texto original. Exibe o tempo de processamento.
 
-- **`processar_arquivo(arquivo_original)`**:
+- **[`processar_arquivo(arquivo_original)`](#processar_arquivoself-arquivo_original)**:
   - Realiza o fluxo completo de criptografia e descriptografia, comparando o texto descriptografado com o original e exibindo métricas detalhadas.
-
 [Voltar ao índice](#índice)
+
+---
 
 #### `_ini(tself, arquivo_dados=None)`
 
@@ -442,9 +451,9 @@ O método `__init__` da classe `GerenciadorAES` é responsável por inicializar 
 ##### Observações
 - Este método é projetado para garantir flexibilidade no gerenciamento de configurações, permitindo o uso de arquivos específicos ou de um padrão predefinido.
 - Caso o arquivo de configurações seja inválido ou não exista, o sistema assegura que padrões válidos sejam definidos e salvos automaticamente.
-
 [Voltar ao índice](#índice)
 
+---
 
 #### `_normalizar_tabela(self, tabela: Dict[Any, Any]) -> Dict[int, int]`
 O método `_normalizar_tabela` da classe `GerenciadorAES` é utilizado para garantir que uma tabela de substituição carregada possua apenas entradas válidas. Ele filtra e converte os valores da tabela para o formato esperado, assegurando que todas as chaves e valores estejam dentro do intervalo permitido pelo algoritmo AES (0-255).
@@ -474,7 +483,7 @@ O método `_normalizar_tabela` da classe `GerenciadorAES` é utilizado para gara
 
 ##### Exemplo de Uso
 1. **Entrada com valores válidos:**
-```
+```python
    tabela = {"0": "255", "1": "128"}
    gerenciador = GerenciadorAES()
    tabela_normalizada = gerenciador._normalizar_tabela(tabela)
@@ -495,9 +504,8 @@ print(tabela_normalizada)
 - Este método é chamado internamente pela função carregar_configuracoes para validar a tabela carregada de um arquivo.
 - Entradas inválidas não interrompem a execução do programa, mas são ignoradas com uma notificação no console.
 - A normalização é essencial para garantir o funcionamento correto do algoritmo AES, que depende de tabelas de substituição bem definidas.
-
 [Voltar ao índice](#índice)
-
+---
 
 #### `carregar_configuracoes(self)`
 
@@ -548,8 +556,9 @@ gerenciador.carregar_configuracoes()
 - Este método é chamado automaticamente durante a inicialização do GerenciadorAES.
 - Garante que o sistema esteja em um estado válido, mesmo que o arquivo JSON seja inválido ou ausente.
 - Todas as operações são projetadas para garantir que as configurações sejam persistentes e reutilizáveis.
-
 [Voltar ao índice](#índice)
+
+---
 
 #### `criptografar_arquivo(self, arquivo_entrada, option)`
 
@@ -601,8 +610,9 @@ Para um arquivo de entrada com o texto "Exemplo":
 - O método é projetado para lidar apenas com arquivos de texto. Formatos binários podem exigir ajustes adicionais.
 - O conteúdo criptografado é retornado em formato hexadecimal, ideal para armazenamento ou transmissão.
 - Exceções são tratadas para garantir que falhas como arquivo inexistente sejam devidamente notificadas ao usuário.
-
 [Voltar ao índice](#índice)
+
+---
 
 #### `descriptografar_arquivo(self, arquivo_entrada='', texto=None)`
 
@@ -660,8 +670,9 @@ Para um arquivo criptografado com conteúdo hexadecimal "`1a2b3c4d...`":
 - O método é flexível, aceitando tanto arquivos quanto strings diretamente.
 - A descriptografia depende da integridade da tabela inversa e das chaves previamente carregadas.
 - Mensagens de erro informativas são exibidas para auxiliar o usuário em caso de falhas.
-
 [Voltar ao índice](#índice)
+
+---
 
 #### `processar_arquivo(self, arquivo_original)`
 
@@ -719,8 +730,8 @@ Para um arquivo original com o texto "Exemplo":
 - Caso o conteúdo descriptografado não seja igual ao original, uma mensagem de erro é exibida.
 - Mensagens claras ajudam a identificar problemas em etapas específicas do fluxo.
 [Voltar ao índice](#índice)
-
---------------------------------------------------
+---
+---
 
 ### aes_core.py
 #### galois_multiply(a, b)
@@ -788,6 +799,8 @@ print(tabela)
 - A tabela gerada garante que cada byte tem exatamente um mapeamento único.
 - Essa abordagem é útil em sistemas criptográficos para introduzir não-linearidade.
 [Voltar ao índice](#índice)
+
+---
 
 #### gerar_tabela_inversa(tabela_substituicao)
 A função `gerar_tabela_inversa` cria uma tabela inversa a partir de uma tabela de substituição fornecida. A tabela inversa é essencial para operações de descriptografia, permitindo que os valores substituídos sejam mapeados de volta às suas chaves originais.
@@ -862,6 +875,8 @@ for bloco in blocos:
 - Cada bloco é representado como uma matriz numpy 4x4, facilitando operações no campo criptográfico.
 [Voltar ao índice](#índice)
 
+---
+
 #### blocos_para_texto(blocos)
 A função `blocos_para_texto` converte uma lista de blocos de dados em uma string de texto legível. É usada para transformar dados processados (criptografados ou descriptografados) de volta ao formato original.
 
@@ -901,6 +916,8 @@ print(texto)
 - Cada bloco deve ter tamanho 4x4, representando 16 bytes de dados processados.
 [Voltar ao índice](#índice)
 
+---
+
 #### blocos_para_lista_bytes(blocos)
 A função `blocos_para_lista_bytes` transforma uma lista de blocos (matrizes 4x4) em uma sequência linear de bytes. Essa conversão é útil para operações que requerem uma representação plana de dados, como gravação em arquivos ou comparações.
 
@@ -936,6 +953,8 @@ print(lista_bytes)
 - A função retorna todos os bytes em uma única lista linear, preservando a ordem em que aparecem nos blocos.
 - É frequentemente usada para serialização de dados, como ao gravar blocos criptografados em arquivos.
 [Voltar ao índice](#índice)
+
+---
 
 #### bytes_para_texto(lista_bytes)
 A função `bytes_para_texto` converte uma lista de bytes em uma string de texto legível. Ela utiliza a codificação UTF-8 para decodificar os valores e remove padding adicional, como bytes nulos, ao final do texto.
@@ -973,6 +992,8 @@ print(texto)
 - A função ignora erros de decodificação, garantindo robustez ao lidar com listas de bytes que possam conter valores inválidos.
 - O uso de rstrip('\x00') assegura que padding adicionado durante a criptografia seja removido.
 [Voltar ao índice](#índice)
+
+---
 
 #### mix_columns(matriz, inverso=False)
 A função `mix_columns` implementa a operação **MixColumns** do AES, que realiza uma mistura linear dos bytes em cada coluna de uma matriz 4x4. Essa operação é essencial para difundir os dados no algoritmo AES, podendo ser usada tanto para criptografia quanto para descriptografia.
@@ -1032,8 +1053,10 @@ print(resultado_inverso)
 - A matriz de entrada e saída deve ser do tipo numpy.uint8 para garantir compatibilidade.
 [Voltar ao índice](#índice)
 
+---
+
 #### substitute_bytes(matriz, tabela)
-A função `substitute_bytes` substitui cada byte de uma matriz 4x4 pelos valores correspondentes em uma tabela de substituição personalizada. Ela realiza uma operação semelhante à etapa **SubBytes** do AES, mas utilizando uma tabela definida pelo usuário em vez da S-Box padrão.
+A função `substitute_bytes` substitui cada byte de uma matriz 4x4 pelos valores correspondentes em uma tabela de substituição personalizada. Ela realiza uma operação semelhante à etapa **[SubBytes](#substitute_bytesmatriz-tabela)** do AES, mas utilizando uma tabela definida pelo usuário em vez da S-Box padrão.
 
 ##### Argumentos
 - **`matriz`** (`numpy.ndarray`):
@@ -1076,6 +1099,8 @@ print(matriz_substituida)
 - A tabela de substituição personalizada deve mapear todos os valores de byte (0-255) para evitar erros durante a substituição.
 - É uma operação essencial para introduzir não-linearidade em algoritmos criptográficos, aumentando a resistência a ataques.
 [Voltar ao índice](#índice)
+
+---
 
 #### shift_rows(matriz, inverso=False)
 A função `shift_rows` realiza a operação **ShiftRows** do AES em uma matriz 4x4, deslocando ciclicamente as linhas da matriz para a esquerda (criptografia) ou para a direita (descriptografia). Essa operação é essencial para misturar os bytes na transformação do estado AES.
@@ -1134,6 +1159,8 @@ print(matriz_shift_inversa)
 - A direção do deslocamento é controlada pelo parâmetro inverso, permitindo o uso do mesmo método para criptografia e descriptografia.
 [Voltar ao índice](#índice)
 
+---
+
 #### add_round_key(matriz_bloco, chave_rodada)
 A função `add_round_key` implementa a operação **AddRoundKey** do AES, combinando a matriz de estado atual com a chave da rodada por meio de uma operação XOR. Essa etapa é essencial para integrar a chave criptográfica ao processamento do estado.
 
@@ -1183,9 +1210,11 @@ print("Resultado:")
 print(resultado)
 ```
 ##### Observações
-- **AddRoundKey** é uma operação reversível, pois o XOR aplicado com a mesma chave restaura os dados originais.
+- **AddRoundKey** é uma operação reversível, pois o $XOR$ aplicado com a mesma chave restaura os dados originais.
 - A matriz da chave deve ser representada exatamente como uma lista de 16 bytes.
 [Voltar ao índice](#índice)
+
+---
 
 #### expansao_chave(chave_inicial, tabela_substituicao, num_rodadas=10)
 A função `expansao_chave` realiza a expansão de uma chave inicial para gerar as chaves de cada rodada do AES. Esse processo é fundamental para garantir que cada rodada use uma chave única, derivada da chave inicial, utilizando substituições, deslocamentos circulares e operações XOR com constantes de rodada.
@@ -1244,6 +1273,8 @@ for i, chave in enumerate(chaves_expandidas):
 - O número de rodadas pode ser ajustado para diferentes tamanhos de chave (por exemplo, 12 ou 14 rodadas).
 [Voltar ao índice](#índice)
 
+---
+
 #### criptografar(blocos, chaves, tabela, num_rodadas=10)
 A função `criptografar` aplica o algoritmo AES modificado para criptografar uma lista de blocos de dados. Utilizando chaves expandidas, uma tabela de substituição personalizada (S-Box) e as transformações do AES, ela processa cada bloco em múltiplas rodadas, gerando blocos criptografados.
 
@@ -1264,17 +1295,17 @@ A função `criptografar` aplica o algoritmo AES modificado para criptografar um
 ##### Funcionamento
 1. **Processamento de Cada Bloco:**
    - Para cada bloco na lista:
-     - Aplica a etapa inicial com a primeira chave (AddRoundKey).
+     - Aplica a etapa inicial com a primeira chave ([AddRoundKey](#add_round_keymatriz_bloco-chave_rodada)).
 
 2. **Rodadas Intermediárias:**
    - Em cada uma das rodadas intermediárias:
-     - **SubBytes:** Substitui os bytes usando a tabela S-Box.
-     - **ShiftRows:** Realiza deslocamento das linhas.
-     - **MixColumns:** Mistura as colunas para difusão.
+     - **[SubBytes](#substitute_bytesmatriz-tabela):** Substitui os bytes usando a tabela S-Box.
+     - **[ShiftRows](#shift_rowsmatriz-inversofalse):** Realiza deslocamento das linhas.
+     - **[MixColumns](#mix_columnsmatriz-inversofalse):** Mistura as colunas para difusão.
      - **AddRoundKey:** Aplica a chave correspondente à rodada.
 
 3. **Rodada Final:**
-   - Realiza as operações **SubBytes**, **ShiftRows**, e **AddRoundKey**, omitindo **MixColumns**.
+   - Realiza as operações **SubBytes**, **[ShiftRows](#shift_rowsmatriz-inversofalse)**, e **[AddRoundKey](#add_round_keymatriz_bloco-chave_rodada)**, omitindo **MixColumns**.
 
 4. **Atualização dos Blocos:**
    - Substitui o bloco original pelo estado criptografado resultante.
@@ -1318,6 +1349,8 @@ for bloco in blocos_criptografados:
 - A tabela de substituição deve mapear todos os valores de byte (0-255).
 [Voltar ao índice](#índice)
 
+---
+
 #### descriptografar(blocos, chaves, tabela_inversa, num_rodadas=10)
 A função `descriptografar` aplica o algoritmo AES modificado para reverter a criptografia de uma lista de blocos de dados. Utilizando chaves expandidas e uma tabela de substituição inversa (S-Box inversa), ela processa cada bloco em múltiplas rodadas para restaurar os dados originais.
 
@@ -1338,18 +1371,18 @@ A função `descriptografar` aplica o algoritmo AES modificado para reverter a c
 ##### Funcionamento
 1. **Processamento de Cada Bloco:**
    - Para cada bloco na lista:
-     - Aplica a última chave (AddRoundKey).
-     - Realiza as operações inversas de **ShiftRows** e **SubBytes**.
+     - Aplica a última chave ([AddRoundKey](#add_round_keymatriz_bloco-chave_rodada)).
+     - Realiza as operações inversas de **[ShiftRows](#shift_rowsmatriz-inversofalse)** e **[SubBytes](#substitute_bytesmatriz-tabela)**.
 
 2. **Rodadas Intermediárias:**
    - Em cada rodada intermediária (em ordem inversa):
-     - **AddRoundKey:** Aplica a chave correspondente à rodada.
-     - **MixColumns inverso:** Reverte a difusão.
-     - **ShiftRows inverso:** Realiza deslocamento das linhas para a direita.
+     - **[AddRoundKey](#add_round_keymatriz_bloco-chave_rodada):** Aplica a chave correspondente à rodada.
+     - **[MixColumns](#mix_columnsmatriz-inversofalse) inverso:** Reverte a difusão.
+     - **[ShiftRows](#shift_rowsmatriz-inversofalse) inverso:** Realiza deslocamento das linhas para a direita.
      - **SubBytes inverso:** Substitui os bytes usando a S-Box inversa.
 
 3. **Rodada Final:**
-   - Realiza a última aplicação de **AddRoundKey** com a chave inicial.
+   - Realiza a última aplicação de **[AddRoundKey](#add_round_keymatriz_bloco-chave_rodada)** com a chave inicial.
 
 4. **Atualização dos Blocos:**
    - Substitui o bloco original pelo estado descriptografado resultante.
@@ -1392,6 +1425,8 @@ for bloco in blocos_descriptografados:
 - As chaves expandidas e a S-Box inversa devem ser correspondentes às usadas na criptografia.
 - Cada bloco deve ser uma matriz 4x4 para compatibilidade com as transformações do AES.
 [Voltar ao índice](#índice)
+
+---
 
 #### descriptografar_texto(conteudo, chaves, tabela_inversa, num_rodadas=10)
 A função `descriptografar_texto` realiza a descriptografia de um texto criptografado representado em formato hexadecimal. Ela converte os dados em blocos de 16 bytes, aplica o algoritmo AES modificado para descriptografia e retorna o texto original legível.
@@ -1455,7 +1490,8 @@ print("Texto Original Descriptografado:", texto_original)
 - Padding (zeros adicionais) é removido automaticamente ao final do processo.
 [Voltar ao índice](#índice)
 
---------------------------------------------------
+---
+---
 
 ### aes_openssl.py
 #### main()
@@ -1502,6 +1538,8 @@ Tempo total 0.123456 segundos
 - O programa gera chaves e IVs de forma aleatória a cada execução.
 - Para garantir que os arquivos sejam processados corretamente, é necessário que o OpenSSL esteja configurado no ambiente.
 [Voltar ao índice](#índice)
+
+---
 
 #### processar_arquivo(input_file, output_file, chave, iv, operacao)
 A função `processar_arquivo` utiliza o comando OpenSSL para criptografar ou descriptografar arquivos. Ela suporta o algoritmo AES-256-CBC e realiza operações baseadas em uma chave e um vetor de inicialização (IV) fornecidos pelo usuário.
@@ -1572,7 +1610,8 @@ else:
 - Essa função é útil para integrar processos de criptografia e descriptografia baseados em arquivos.
 [Voltar ao índice](#índice)
 
---------------------------------------------------
+---
+---
 
 ### Requisitos
 1. **Python 3.10+**
@@ -1588,5 +1627,4 @@ else:
       - `Dict`
       - `Any`
 3. **OpenSSL**.
-
 [Voltar ao índice](#índice)
