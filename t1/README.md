@@ -3,9 +3,96 @@
 ## **Descrição Geral**
 O projeto implementa uma versão personalizada do AES (Advanced Encryption Standard) substituindo a S-Box padrão por uma **cifra monoalfabética personalizada**. Ele permite a **criptografia**, **descriptografia**, e **validação de desempenho** comparada à implementação do AES utilizando OpenSSL.
 
-- **`-c` (Criptografar):** Converte um texto em um formato criptografado e salva no arquivo `texto_criptografado.txt`.
-- **`-d` (Descriptografar):** Converte o texto criptografado de volta ao formato original e salva no arquivo `texto_descriptografado.txt`.
-- **`-v` (Verificação Completa):** Realiza o fluxo completo de criptografia e descriptografia, comparando a saída com o texto original e reportando os tempos de execução.
+### **Substituição da Caixa-S por Outra Tabela de Substituição (Cifra Monoalfabética)**
+
+Nesta implementação, a S-BOX original foi substituída por uma **tabela de substituição gerada aleatoriamente**. Essa nova tabela utiliza o conceito de **Cifra Monoalfabética**, onde cada byte (0-255) é substituído por outro byte único.
+
+---
+
+#### Nova Tabela de Substituição
+
+A nova tabela é gerada como uma permutação aleatória dos valores de 0 a 255. Isso garante que:
+
+1. Cada byte tenha um único valor correspondente na substituição.
+2. Não existam valores duplicados ou bytes não mapeados.
+
+A tabela inversa, usada na **descriptografia**, também é gerada automaticamente, sendo o mapeamento inverso da tabela de substituição.
+---
+
+#### **Código para Gerar a Tabela**
+
+```python
+import random
+
+# Gera uma tabela de substituição aleatória (Cifra Monoalfabética)
+def gerar_tabela_substituicao():
+    valores = list(range(256))
+    random.shuffle(valores)  # Permutação aleatória dos valores
+    return {i: valores[i] for i in range(256)}
+
+# Gera a tabela inversa para descriptografia
+def gerar_tabela_inversa(tabela_substituicao):
+    return {v: k for k, v in tabela_substituicao.items()}
+```
+---
+
+#### **Armazenamento da Tabela (key.json)**  
+
+A tabela de substituição gerada é armazenada em um arquivo JSON chamado **`key.json`**. O formato do arquivo contém dois elementos principais:
+
+1. **`tabela`**: Mapeamento de substituição direto.
+2. **`chave`**: A chave AES usada no algoritmo.
+
+##### Exemplo de Estrutura de `key.json`:
+
+```json
+{
+    "tabela": {
+        "0": 172,
+        "1": 45,
+        "2": 198,
+        "3": 127,
+        "...": "...",
+        "255": 12
+    },
+    "chave": [43, 126, 21, 22, 40, 174, 210, 166, 171, 247, 21, 136, 9, 207, 79, 60]
+}
+```
+
+---
+Ao iniciar o programa, a tabela de substituição é carregada a partir do arquivo `key.json`. Se o arquivo não existir, uma nova tabela é gerada e salva automaticamente.
+
+##### Código para Carregar ou Gerar a Tabela:
+
+```python
+    def carregar_configuracoes(self):
+        # Criar arquivo se não existir
+        if not os.path.exists(self.arquivo_dados):
+            with open(self.arquivo_dados, "w") as f:
+                json.dump({}, f)
+        
+        # Carregar dados
+        try:
+            with open(self.arquivo_dados, "r") as f:
+                dados = json.load(f)
+        except json.JSONDecodeError:
+            # Se o arquivo estiver corrompido, reinicia com configurações padrão
+            dados = {}
+        
+        # Normalizar tabela ou gerar nova se houver problemas
+        tabela_carregada = dados.get("tabela", {})
+        self.tabela = self._normalizar_tabela(tabela_carregada)
+        
+        # Se a tabela estiver vazia após normalização, gera uma nova
+        if not self.tabela:
+            self.tabela = gerar_tabela_substituicao()
+```
+---
+
+#### **Funcionamento da Tabela na Criptografia**
+
+1. Durante a criptografia, a etapa de substituição (`substitute_bytes`) usa a tabela carregada do `key.json`.
+2. Na descriptografia, a tabela inversa é usada para reverter a substituição.
 
 ---
 
