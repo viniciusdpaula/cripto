@@ -10,7 +10,7 @@ Ele permite a **criptografia**, **descriptografia**, e **validação de desempen
 
 1. [Substituição da Caixa-S](#substituição-da-caixa-s-por-outra-tabela-de-substituição-cifra-monoalfabética)
 2. [Análise de Custo](#análise-de-custo-computacional-do-algoritmo-aes-modificado)
-3. [aes_manager.py](#arquivo-aes_managerpy)
+3. [Arquivo aes_manager.py](#arquivo-aes_managerpy)
   - 3.1 [main()](#main)
   - 3.2 [GerenciadorAES](#gerenciadoraes)
     - 3.2.1 [_init()](#_initself-arquivo_dadosnone_)
@@ -19,7 +19,7 @@ Ele permite a **criptografia**, **descriptografia**, e **validação de desempen
     - 3.2.4 [criptografar_arquivo()](#criptografar_arquivoself-arquivo_entrada-option)
     - 3.2.5 [descriptografar_arquivo()](#descriptografar_arquivoself-arquivo_entrada-textonone)
     - 3.2.6 [processar_arquivo()](#processar_arquivoself-arquivo_original)
-4. [aes_core.py](#arquivo-aes_corepy)
+4. [Arquivo aes_core.py](#arquivo-aes_corepy)
   - 4.1 [galois_multiply()](#galois_multiply)
   - 4.2 [gerar_tabela_substituicao()](#gerar_tabela_substituicao)
   - 4.3 [gerar_tabela_inversa()](#gerar_tabela_inversa)
@@ -35,10 +35,11 @@ Ele permite a **criptografia**, **descriptografia**, e **validação de desempen
   - 4.13 [criptografar()](#criptografar)
   - 4.14 [descriptografar()](#descriptografar)
   - 4.15 [descriptografar_texto()](#descriptografar_texto)
-5. [aes_openssl.py](#arquivo-aes_opensslpy)
+5. [Arquivo aes_openssl.py](#arquivo-aes_opensslpy)
   - 5.1 [main()](#main-1)
   - 5.2 [processar_arquivo()](#processar_arquivo)
-6. [Requisitos](#requisitos)
+6. [Diretório utils/](#utils)
+7. [Requisitos](#requisitos)
 
 
 ---
@@ -1608,6 +1609,31 @@ else:
 - O OpenSSL deve estar instalado e configurado no ambiente para que a função funcione.
 - A chave e o IV devem estar no formato hexadecimal e corresponder aos tamanhos esperados (32 bytes para chave e 16 bytes para IV).
 - Essa função é útil para integrar processos de criptografia e descriptografia baseados em arquivos.
+[Voltar ao índice](#índice)
+
+---
+---
+
+### utils/
+
+O diretório `utils/` contém recursos auxiliares e ferramentas para dar suporte ao algoritmo AES Modificado. Abaixo está uma visão geral do conteúdo:
+
+### textos/
+O diretório `textos/` fornece arquivos de texto de exemplo que podem ser usados como entrada para testar o algoritmo AES Modificado. Esses arquivos demonstram a funcionalidade e o desempenho do algoritmo com diferentes tamanhos de texto e conteúdos.
+
+#### Exemplos:
+- `texto_curto.txt`: Um texto curto para testes rápidos de criptografia e descriptografia.
+- `texto_medio.txt`: Um texto de tamanho médio para análise de desempenho.
+- `texto_longo.txt`: Um arquivo de texto longo para avaliar o custo computacional do algoritmo com entradas maiores.
+
+#### Uso:
+Para utilizar esses arquivos de texto com o algoritmo AES Modificado:
+
+1. Coloque o arquivo de texto desejado no diretório `utils/textos/`.
+2. Execute o algoritmo usando o comando:
+  ```bash
+  python code/aes_manager.py -c utils/textos/<nome_do_arquivo_de_texto>
+  ```
 [Voltar ao índice](#índice)
 
 ---
