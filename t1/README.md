@@ -37,7 +37,25 @@ A nova tabela é gerada como uma permutação aleatória dos valores de 0 a 255.
 A tabela inversa, usada na **descriptografia**, também é gerada automaticamente, sendo o mapeamento inverso da tabela de substituição.
 
 #### **Código para Gerar a Tabela**
-(gerar_tabela_substituicao)[]
+**gerar_tabela_substituicao():**
+```python
+def gerar_tabela_substituicao():
+    # Cria uma lista com todos os valores possíveis de um byte (0 a 255)
+    valores = list(range(256))
+    # Embaralha os valores para gerar uma substituição aleatória
+    random.shuffle(valores)
+    # Cria e retorna o dicionário de substituição
+    return {i: valores[i] for i in range(256)} # A chave é o índice (0-255), e o valor é o elemento correspondente da lista embaralhada
+```
+(Ver Especificações)[#gerar_tabela_substituicao]
+
+**gerar_tabela_inversa():**
+```python
+def gerar_tabela_inversa(tabela_substituicao):
+    # Retorna um dicionário onde as chaves e valores da tabela de substituição são invertidos
+    return {v: k for k, v in tabela_substituicao.items()}
+```
+(Ver Especificações)[#gerar_tabela_inversa]
 
 #### **Armazenamento da Tabela (key.json)**  
 A tabela de substituição gerada é armazenada em um arquivo JSON chamado **`key.json`**. O formato do arquivo contém dois elementos principais:
@@ -64,8 +82,42 @@ A tabela de substituição gerada é armazenada em um arquivo JSON chamado **`ke
 Ao iniciar o programa, a tabela de substituição é carregada a partir do arquivo `key.json`. Se o arquivo não existir, uma nova tabela é gerada e salva automaticamente.
 
 ##### Código para Carregar ou Gerar a Tabela:
+```python
+  def carregar_configuracoes(self):
+        # Verifica se o arquivo de configurações existe; cria um vazio se necessário
+        if not os.path.exists(self.arquivo_dados):
+            with open(self.arquivo_dados, "w") as f:
+                json.dump({}, f)
+        try:
+            # Tenta carregar o conteúdo do arquivo
+            with open(self.arquivo_dados, "r") as f:
+                dados = json.load(f)
+        except json.JSONDecodeError:
+            # Define configurações padrão se o arquivo estiver corrompido
+            dados = {}
 
-()[carregar_configuracoes]
+        # Tenta carregar e normalizar a tabela de substituição
+        tabela_carregada = dados.get("tabela", {})
+        self.tabela = self._normalizar_tabela(tabela_carregada)
+        if not self.tabela:
+            # Gera uma nova tabela caso a carregada seja inválida ou vazia
+            self.tabela = gerar_tabela_substituicao()
+
+        # Define a chave padrão se nenhuma chave válida estiver presente
+        self.chave = dados.get("chave", [
+            0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6,
+            0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c
+        ])
+
+        # Salva as configurações normalizadas no arquivo JSON
+        with open(self.arquivo_dados, "w") as f:
+            json.dump({"tabela": self.tabela, "chave": self.chave}, f, indent=2)
+
+        # Gera tabelas auxiliares e chaves expandidas para criptografia
+        self.tabela_inversa = gerar_tabela_inversa(self.tabela)
+        self.chaves = expansao_chave(self.chave, self.tabela)
+```
+[Ver Especificações](#carregar_configuracoesself)
 
 #### **Funcionamento da Tabela na Criptografia**
 
