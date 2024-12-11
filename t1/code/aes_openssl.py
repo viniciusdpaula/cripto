@@ -64,14 +64,13 @@ def main():
         None
     """
     # Solicita o caminho do arquivo de entrada ao usuário
-    input_file = input(f"""Hint: diretório atual -> {os.getcwd()}
-                       Digite o caminho do arquivo de entrada: """)
+    input_file = input(f"Hint: diretório atual -> {os.getcwd()}\nDigite o caminho do arquivo de entrada: ")
     if not os.path.exists(input_file):
         # Verifica se o arquivo de entrada existe
         print(f"O arquivo '{input_file}' não foi encontrado.")
     else:
-        # Define o caminho base relativo ao diretório de execução
-        base_dir = os.path.dirname(os.path.abspath(__file__))
+        # Define o caminho base como o diretório raiz do projeto
+        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
         # Define o diretório "saidas"
         dir_saidas = os.path.join(base_dir, "utils", "saidas")
         # Cria o diretório "saidas" caso ele não exista
