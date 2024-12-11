@@ -1,3 +1,3 @@
 Linha 1
 Linha 2 com caracteres especiais: !@#$%^&*()_+[]{}|;:'",.<>?/`~
-ultima linha com emoji: 🚀🔥✨
+Linha 3 com emoji: 🚀🔥✨
