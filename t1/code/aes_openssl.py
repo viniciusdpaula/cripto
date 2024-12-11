@@ -64,17 +64,24 @@ def main():
         None
     """
     # Solicita o caminho do arquivo de entrada ao usuário
-    input_file = input("Digite o caminho do arquivo de entrada: ")
+    input_file = input(f"""Hint: diretório atual -> {os.getcwd()}
+                       Digite o caminho do arquivo de entrada: """)
     if not os.path.exists(input_file):
         # Verifica se o arquivo de entrada existe
         print(f"O arquivo '{input_file}' não foi encontrado.")
     else:
+        # Define o caminho base relativo ao diretório de execução
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        # Define o diretório "saidas"
+        dir_saidas = os.path.join(base_dir, "utils", "saidas")
+        # Cria o diretório "saidas" caso ele não exista
+        os.makedirs(dir_saidas, exist_ok=True)
         # Define os caminhos dos arquivos de saída para criptografia e descriptografia
-        arquivo_criptografado = "../utils/saidas/mensagem_criptografada.aes"
-        arquivo_decifrado = "../utils/saidas/mensagem_descriptografada.txt"
+        arquivo_criptografado = os.path.join(dir_saidas, "mensagem_criptografada.aes")
+        arquivo_decifrado = os.path.join(dir_saidas, "mensagem_descriptografada.txt")
         # Gera uma chave criptográfica de 256 bits e um vetor de inicialização (IV) de 128 bits
-        chave = os.urandom(32)  # Chave AES-256
-        iv = os.urandom(16)     # IV de 16 bytes
+        chave = os.urandom(32).hex()  # Chave AES-256
+        iv = os.urandom(16).hex()     # IV de 16 bytes
         # Criptografa o arquivo de entrada e mede o tempo gasto
         tempo_cripto = processar_arquivo(input_file, arquivo_criptografado, chave, iv, operacao="-e")
         # Decifra o arquivo criptografado e mede o tempo gasto
